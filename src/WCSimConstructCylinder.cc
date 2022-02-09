@@ -145,58 +145,20 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 
    logicWC->SetVisAttributes(G4VisAttributes::Invisible); //amb79
   
-  //-----------------------------------------------------
-  // everything else is contained in this water tubs
-  //-----------------------------------------------------
-  G4Tubs* solidWCBarrel = new G4Tubs("WCBarrel",
-     0.0*m,
-     WCRadius+1.*m, // add a bit of extra space
-     .5*WCLength +2.0*m,  //jl145 - per blueprint //extra meter of water at the top but should be air :: TODO :: need to define opAirTySurface to implement this though 
-     0.*deg,
-     360.*deg);
-                                
-  G4LogicalVolume* logicWCBarrel = 
-    new G4LogicalVolume(solidWCBarrel,
-			G4Material::GetMaterial(water),
-			"WCBarrel",
-			0,0,0);
-
-  //  std::clog << " qqqqqqqqqqqqqqqqqqqq " << " WCRadius " << WCRadius << " WCBarrel radius " << WCRadius+1.*m << " half height "  << .5*WCLength << std::endl;
+  // -------------------------------------------------------------------------------------------------------------------
+  // this tubs of water contains all detector components except the top endcap support, cave tyvec and outer endap tyvec
+  // -------------------------------------------------------------------------------------------------------------------
   
-  // 1m gap of air at the top of the OD 
-  /*G4Tubs* solidWCAirGap = new G4Tubs("WCAirGap",
+  G4Tubs* solidWCBarrel_full = new G4Tubs("WCBarrel_full",
      0.0*m,
-     WCRadius+1.*m, // add a bit of extra space
-     1.2*m,  
+     WCRadius, //+1.*m, // add a bit of extra space
+     .5*WCLength, //jl145 - per blueprint //extra meter of water at the top but should be air :: TODO :: need to define opAirTySurface to implement this though 
      0.*deg,
      360.*deg);
-      
-  G4LogicalVolume* logicWCAirGap = 
-    new G4LogicalVolume(solidWCAirGap,
-			G4Material::GetMaterial(water),
-			"WCBarrel",
-			0,0,0);*/
-
-    G4VPhysicalVolume* physiWCBarrel = 
-    new G4PVPlacement(0,
-		      G4ThreeVector(0.,0.,0.), 
-		      logicWCBarrel,
-		      "WCBarrel",
-		      logicWC,
-		      false,
-	 	      0);
-                   
-    /*G4VPhysicalVolume* physiWCAirGap = 
-    new G4PVPlacement(0,
-		      G4ThreeVector(0.,0.,0.5*WCLength +0.6*m),
-		      logicWCBarrel,
-		      "WCAir",
-		      logicWC,
-		      false,
-	 	      0);*/
-
-
-  logicWCBarrel->SetVisAttributes(cyan); //G4VisAttributes::Invisible); 
+     
+  // logical volume to hold the tubs of water
+  G4LogicalVolume* logicWCBarrel;
+  
   if(isODConstructed) {
     
     
@@ -226,7 +188,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
             G4ThreeVector(0., 0., 0.5*WCIDHeight + WCBlackSheetThickness + WCODDeadSpace + WCODTyvekSheetThickness + WCODHeightWaterDepth + 1.*m), 
             logicTopStruct,
             "TopStruct",
-            logicWCBarrel,
+            logicWC,
             false,
             0,
             true);
@@ -237,7 +199,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
     StructColour->SetForceSolid(true);
     logicTopStruct->SetVisAttributes(StructColour);
     
-    std::cout<<" =========== Finished construction onf top cap structure ==========="<<std::endl;
+    std::cout<<" =========== Finished construction of top cap structure ==========="<<std::endl;
     
     
     //-----------------------------------------------------
@@ -245,26 +207,26 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
     //-----------------------------------------------------
 
     G4Tubs *solidCaveTyvek = new G4Tubs("WC",
-                                        WCRadius,
-                                        WCRadius + WCODTyvekSheetThickness,
-                                        .5 * WCLength +0.5*m,  //jl145 - per blueprint extra 1m of air at top
-                                        0. * deg,
-                                        360. * deg);
+            WCRadius,
+            WCRadius + WCODTyvekSheetThickness,
+            .5 * WCLength +0.5*m,  //jl145 - per blueprint extra 1m to accomodate air gap at top
+            0. * deg,
+            360. * deg);
 
     G4LogicalVolume *logicCaveTyvek =
         new G4LogicalVolume(solidCaveTyvek,
-                            G4Material::GetMaterial("Tyvek"),
-                            "CaveTyvek",
-                            0, 0, 0);
+            G4Material::GetMaterial("Tyvek"),
+            "CaveTyvek",
+            0, 0, 0);
 
     G4VPhysicalVolume *physiCaveTyvek =
         new G4PVPlacement(0,
-                          G4ThreeVector(0., 0., 0.5*m), //moved up a lil bit to account for 1m of air at top
-                          logicCaveTyvek,
-						  "CaveBarrelTyvek",
-						  logicWCBarrel,
-						  false,
-                          0);
+            G4ThreeVector(0., 0., 0.5*m), //moved up to account for 1m of air at top
+            logicCaveTyvek,
+					  "CaveBarrelTyvek",
+					  logicWC,
+					  false,
+            0);
 
     G4LogicalSkinSurface *TyvekCaveBarrelSurface = new G4LogicalSkinSurface("TyvekCaveBarrelSurface", logicCaveTyvek, OpWaterTySurface);
 
@@ -278,17 +240,17 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
     //-----------------------------------------------------
 
     G4Tubs *solidCaveCapsTyvek = new G4Tubs("CaveCapsTyvek",
-                                            0,
-                                            WCRadius,
-                                            .5 * (WCODTyvekSheetThickness),
-                                            0. * deg,
-                                            360. * deg);
+          0,
+          WCRadius + WCODTyvekSheetThickness,
+          .5 * (WCODTyvekSheetThickness),
+          0. * deg,
+          360. * deg);
 
     G4LogicalVolume *logicCaveCapsTyvek =
-			new G4LogicalVolume(solidCaveCapsTyvek,
-								G4Material::GetMaterial("Tyvek"),
-								"CaveCapTyvek",
-								0, 0, 0);
+    new G4LogicalVolume(solidCaveCapsTyvek,
+					G4Material::GetMaterial("Tyvek"),
+					"CaveCapTyvek",
+					0, 0, 0);
 
     G4LogicalSkinSurface *TyvekCaveTopSurface = new G4LogicalSkinSurface("TyvekCaveTopSurface", logicCaveCapsTyvek, OpWaterTySurface);
 
@@ -298,30 +260,65 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
     logicCaveCapsTyvek->SetVisAttributes(G4VisAttributes::Invisible); //amb79                
     
     G4VPhysicalVolume *physiTopCaveTyvek =
-        new G4PVPlacement(0,
-                          G4ThreeVector(0., 0., WCLength / 2 ), //+ 1.*m -0.05*m for extra metre of air at the top 
-						  logicCaveCapsTyvek,
-                          "CaveTopTyvek",
-						  logicWCBarrel,
-                          false,
-                          0);
+    new G4PVPlacement(0,
+          G4ThreeVector(0., 0., WCLength / 2 + 1.*m -0.05*m), //+ 1.*m -0.05*m for extra metre of air at the top 
+				  logicCaveCapsTyvek,
+          "CaveTopTyvek",
+				  logicWC,
+          false,
+          0);
 
     G4VPhysicalVolume *physiBottomCaveTyvek =
-        new G4PVPlacement(0,
-                          G4ThreeVector(0., 0., - WCLength / 2),
-						  logicCaveCapsTyvek, 
-                          "CaveBottomTyvek",
-						  logicWCBarrel,
-                          false,
-                          0);
+    new G4PVPlacement(0,
+          G4ThreeVector(0., 0., - WCLength / 2),
+				  logicCaveCapsTyvek, 
+          "CaveBottomTyvek",
+				  logicWC,
+          false,
+          0);
 
   logicCaveCapsTyvek->SetVisAttributes(magenta);
+  
+  // use G4SubtractionSolid to "drill out" the water to make room for the endcap support structure
+  // essentially returns solidWCBarrel_full - TopStructSolid
+  G4SubtractionSolid *solidWCBarrel = new G4SubtractionSolid("solidWCBarrel",
+      (G4VSolid*) solidWCBarrel_full, 
+      (G4VSolid*) TopStructSolid,
+      new G4RotationMatrix(),      
+      G4ThreeVector(0., 0., 0.5*WCIDHeight + WCBlackSheetThickness + WCODDeadSpace + WCODTyvekSheetThickness + WCODHeightWaterDepth + 1.*m));
+                                
+  logicWCBarrel = 
+    new G4LogicalVolume(solidWCBarrel,
+			G4Material::GetMaterial(water),
+			"WCBarrel",
+			0,0,0);
+    
   } // END Tyvek cave
-  //-----------------------------------------------------
+  
+else{ // not idODConstructed
+  logicWCBarrel = 
+    new G4LogicalVolume(solidWCBarrel_full,
+			G4Material::GetMaterial(water),
+			"WCBarrel",
+			0,0,0);
+  }
+
+  //  std::clog << " #################### " << " WCRadius " << WCRadius << " WCBarrel radius " << WCRadius+1.*m << " half height "  << .5*WCLength << std::endl;
+
+    G4VPhysicalVolume* physiWCBarrel = 
+    new G4PVPlacement(0,
+	      G4ThreeVector(0.,0.,0.), 
+	      logicWCBarrel,
+	      "WCBarrel",
+	      logicWC,
+	      false,
+ 	      0);
+
+  logicWCBarrel->SetVisAttributes(cyan); //G4VisAttributes::Invisible); 
 
 // This volume needs to made invisible to view the blacksheet and PMTs with RayTracer
   if (Vis_Choice == "RayTracer")
-   {logicWCBarrel->SetVisAttributes(G4VisAttributes::Invisible);
+   {//logicWCBarrel->SetVisAttributes(G4VisAttributes::Invisible);
    } 
 
   else
@@ -340,13 +337,13 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   G4double mainAnnulusRmax[2] = {outerAnnulusRadius, outerAnnulusRadius};
 
   G4Polyhedra* solidWCBarrelAnnulus = new G4Polyhedra("WCBarrelAnnulus",
-                                                   0.*deg, // phi start
-                                                   totalAngle, 
-                                                   (G4int)WCBarrelRingNPhi, //NPhi-gon
-                                                   2,
-                                                   mainAnnulusZ,
-                                                   mainAnnulusRmin,
-                                                   mainAnnulusRmax);
+       0.*deg, // phi start
+       totalAngle, 
+       (G4int)WCBarrelRingNPhi, //NPhi-gon
+       2,
+       mainAnnulusZ,
+       mainAnnulusRmin,
+       mainAnnulusRmax);
   
   G4LogicalVolume* logicWCBarrelAnnulus = 
     new G4LogicalVolume(solidWCBarrelAnnulus,
@@ -371,13 +368,13 @@ if(!debugMode)
                         barrelCellHeight/2.};
 
   G4Polyhedra* solidWCBarrelRing = new G4Polyhedra("WCBarrelRing",
-                                                   0.*deg,//+dPhi/2., // phi start
-                                                   totalAngle, //phi end
-                                                   (G4int)WCBarrelRingNPhi, //NPhi-gon
-                                                   2,
-                                                   RingZ,
-                                                   mainAnnulusRmin,
-                                                   mainAnnulusRmax);
+         0.*deg,//+dPhi/2., // phi start
+         totalAngle, //phi end
+         (G4int)WCBarrelRingNPhi, //NPhi-gon
+         2,
+         RingZ,
+         mainAnnulusRmin,
+         mainAnnulusRmax);
 
   G4LogicalVolume* logicWCBarrelRing = 
     new G4LogicalVolume(solidWCBarrelRing,
@@ -414,7 +411,7 @@ else {
   G4Polyhedra* solidWCBarrelCell = new G4Polyhedra("WCBarrelCell",
                                                    -dPhi/2.+0.*deg, // phi start
                                                    dPhi, //total Phi
-                                                   1, //NPhi-gon
+                                                   1, //NPhi-gon 
                                                    2,
                                                    RingZ,
                                                    mainAnnulusRmin,
