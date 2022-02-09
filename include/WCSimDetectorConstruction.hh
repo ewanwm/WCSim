@@ -188,6 +188,9 @@ public:
   void SetODEdited(G4bool val){odEdited = val;}
   void SetIsWLSFilled(G4bool val){isWLSFilled = val;}
   void SetBuildODWLSCladding(G4bool val){BuildODWLSCladding = val;}
+  void SetBuildTopEndcapStruct(G4bool val){BuildTopEndcapStruct = val;}
+  void SetTyvecAboveAirGap(G4bool val){TyvecAboveAirGap = val;}
+  void SetTopStructTyvecWrapping(G4bool val){TopStructTyvecWrapping = val;}
   G4bool GetODEdited(){return odEdited;}
 
   ////////// END OD /////////////
@@ -230,7 +233,7 @@ private:
   WCSimDetectorMessenger* messenger;
 
   // The Construction routines
-  G4LogicalVolume*   ConstructCylinder();
+  G4LogicalVolume* ConstructCylinder();
   G4LogicalVolume* ConstructPMT(G4String,G4String,G4String detectorElement="tank",bool WLS=false);
   G4LogicalVolume* ConstructPMTAndWLSPlate(G4String,G4String,G4String detectorElement="OD");
 
@@ -405,6 +408,11 @@ private:
   // WLS material name
   bool isWLSFilled;
   bool BuildODWLSCladding;
+  
+  // top endcap support struct 
+  bool BuildTopEndcapStruct;
+  bool TyvecAboveAirGap;
+  bool TopStructTyvecWrapping;
 
   // ############################# //
   // # *** END OD Parameters *** # //
