@@ -17,8 +17,11 @@
 #include "WCSimDetectorConstruction.hh"
 #include "WCSimTrackInformation.hh"
 
-WCSimWCSD::WCSimWCSD(G4String CollectionName, G4String name,WCSimDetectorConstruction* myDet)
-:G4VSensitiveDetector(name)
+WCSimWCSD::WCSimWCSD(G4String CollectionName,
+                     G4String name,
+                     WCSimDetectorConstruction* myDet,
+                     G4String detectorElement)
+:G4VSensitiveDetector(name), detectorElement(detectorElement)
 {
   // Place the name of this collection on the list.  We can have more than one
   // in principle.  CollectionName is a vector.
@@ -54,7 +57,7 @@ void WCSimWCSD::Initialize(G4HCofThisEvent* HCE)
   // Add it to the Hit collection of this event.
   HCE->AddHitsCollection( HCID, hitsCollection );  
 
-  // Initilize the Hit map to all tubes not hit.
+  // Initialize the Hit map to all tubes not hit.
   PMTHitMap.clear();
   // Trick to access the static maxPE variable.  This will go away with the 
   // variable.
@@ -90,9 +93,6 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   G4int    trackID           = aStep->GetTrack()->GetTrackID();
   G4String volumeName        = aStep->GetTrack()->GetVolume()->GetName();
   
-  //XQ Add the wavelength there
-  G4float  wavelength = (2.0*M_PI*197.3)/( aStep->GetTrack()->GetTotalEnergy()/eV);
-  
   G4double energyDeposition  = aStep->GetTotalEnergyDeposit();
   G4double hitTime           = aStep->GetPreStepPoint()->GetGlobalTime();
 
@@ -106,7 +106,12 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   // they don't in skdetsim. 
   if ( particleDefinition != G4OpticalPhoton::OpticalPhotonDefinition())
     return false;
-  G4String WCIDCollectionName = fdet->GetIDCollectionName();
+
+  // G4String WCIDCollectionName = fdet->GetIDCollectionName();
+  G4String WCCollectionName;
+  if(detectorElement=="tank") WCCollectionName = fdet->GetIDCollectionName();
+  else if (detectorElement=="OD") WCCollectionName = fdet->GetODCollectionName();
+
   // M Fechner : too verbose
   //  if (aStep->GetTrack()->GetTrackStatus() == fAlive)G4cout << "status is fAlive\n";
   if ((aStep->GetTrack()->GetTrackStatus() == fAlive )
@@ -137,30 +142,34 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 //  G4cout << tubeTag.str() << G4endl;
 
   // Get the tube ID from the tubeTag
-  G4int replicaNumber = WCSimDetectorConstruction::GetTubeID(tubeTag.str());
+  // G4int replicaNumber = WCSimDetectorConstruction::GetTubeID(tubeTag.str());
+  G4int replicaNumber;
+  if(detectorElement=="tank") replicaNumber = WCSimDetectorConstruction::GetTubeID(tubeTag.str());
+  else if(detectorElement=="OD") replicaNumber = WCSimDetectorConstruction::GetODTubeID(tubeTag.str());
+  else G4cout << "detectorElement not defined..." << G4endl;
 
-    
-  G4float theta_angle;
-  G4float effectiveAngularEfficiency;
+  G4double theta_angle = 0.;
+  G4double effectiveAngularEfficiency = 0.;
 
 
-  
-  G4float ratio = 1.;
-  G4float maxQE;
-  G4float photonQE;
-  if (fdet->GetPMT_QE_Method()==1){
+  //XQ Add the wavelength there
+  G4double  wavelength = (2.0*M_PI*197.3)/( aStep->GetTrack()->GetTotalEnergy()/eV);
+  G4double ratio = 1.;
+  G4double maxQE = 0.;
+  G4double photonQE = 0.;
+  if (fdet->GetPMT_QE_Method() == 1 || fdet->GetPMT_QE_Method() == 4){
     photonQE = 1.1;
   }else if (fdet->GetPMT_QE_Method()==2){
-    maxQE = fdet->GetPMTQE(WCIDCollectionName,wavelength,0,240,660,ratio);
-    photonQE = fdet->GetPMTQE(volumeName, wavelength,1,240,660,ratio);
+    // maxQE = fdet->GetPMTQE(WCIDCollectionName,wavelength,0,200,700,ratio);
+    maxQE = fdet->GetPMTQE(WCCollectionName,wavelength,0,240,660,ratio);
+    photonQE = fdet->GetPMTQE(WCCollectionName, wavelength,1,240,660,ratio);
     photonQE = photonQE/maxQE;
-  }else if (fdet->GetPMT_QE_Method()==3){
+  }else if (fdet->GetPMT_QE_Method() == 3){
     ratio = 1./(1.-0.25);
-    photonQE = fdet->GetPMTQE(volumeName, wavelength,1,240,660,ratio);
+    photonQE = fdet->GetPMTQE(WCCollectionName, wavelength,1,240,660,ratio);
   }
   
   
-
   if (G4UniformRand() <= photonQE){
     
      G4double local_x = localPosition.x();
@@ -168,6 +177,7 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
      G4double local_z = localPosition.z();
      theta_angle = acos(fabs(local_z)/sqrt(pow(local_x,2)+pow(local_y,2)+pow(local_z,2)))/3.1415926*180.;
      effectiveAngularEfficiency = fdet->GetPMTCollectionEfficiency(theta_angle, volumeName);
+
      if (G4UniformRand() <= effectiveAngularEfficiency || fdet->UsePMT_Coll_Eff()==0){
        //Retrieve the pointer to the appropriate hit collection. Since volumeName is the same as the SD name, this works. 
        G4SDManager* SDman = G4SDManager::GetSDMpointer();
@@ -211,13 +221,20 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   return true;
 }
 
-void WCSimWCSD::EndOfEvent(G4HCofThisEvent*)
+void WCSimWCSD::EndOfEvent(G4HCofThisEvent* HCE)
 {
   if (verboseLevel>0) 
   { 
+
+    //Need to specify which collection in case multiple geometries are built
+    G4String WCIDCollectionName = fdet->GetIDCollectionName();
+    G4SDManager* SDman = G4SDManager::GetSDMpointer();
+    G4int collectionID = SDman->GetCollectionID(WCIDCollectionName);
+    hitsCollection = (WCSimWCHitsCollection*)HCE->GetHC(collectionID);
     G4int numHits = hitsCollection->entries();
 
-    G4cout << "There are " << numHits << " hits in the WC: " << G4endl;
+    // G4cout << "There are " << numHits << " hits in the WC: " << G4endl;
+    G4cout << "There are " << numHits << " hits in the "<<detectorElement<<" : "<< G4endl;
     for (G4int i=0; i < numHits; i++) 
       (*hitsCollection)[i]->Print();
   } 

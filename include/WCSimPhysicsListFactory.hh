@@ -6,9 +6,9 @@
 #include "G4PhysListFactory.hh"
 #include "G4UnitsTable.hh"
 #include "G4OpticalPhysics.hh"
+#include "G4RadioactiveDecayPhysics.hh" 
 
 #include "WCSimPhysicsListFactoryMessenger.hh"
-#include "WCSimPhysicsList.hh"
 #include "WCSimRootOptions.hh"
 
 //class WCSimPhysicsList;
@@ -38,7 +38,6 @@ class WCSimPhysicsListFactory : public G4VModularPhysicsList
     WCSimPhysicsListFactoryMessenger* PhysicsMessenger;
     G4PhysListFactory* factory;
 
-    WCSimPhysicsList * WCSimPhysList;
 };
 
 #endif

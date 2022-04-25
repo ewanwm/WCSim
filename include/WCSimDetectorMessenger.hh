@@ -14,6 +14,7 @@ class G4UIcmdWithAString;
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcmdWithABool.hh"
+#include <G4UIcmdWithAnInteger.hh>
 
 class WCSimDetectorMessenger: public G4UImessenger
 {
@@ -37,6 +38,7 @@ class WCSimDetectorMessenger: public G4UImessenger
   G4UIcmdWithAString* SavePi0;
   G4UIcmdWithAString* PMTQEMethod;
   G4UIcmdWithAString* PMTCollEff;
+  G4UIcmdWithAString* LCConfig;
   G4UIcmdWithADoubleAndUnit* waterTank_Length;
   G4UIcmdWithADoubleAndUnit* cylinderTank_Height;
   G4UIcmdWithADoubleAndUnit* cylinderTank_Diameter;
@@ -46,6 +48,25 @@ class WCSimDetectorMessenger: public G4UImessenger
   G4UIcmdWithAString* tubeCmd;
   G4UIcmdWithAString* distortionCmd;
   G4UIcmdWithoutParameter* WCConstruct;
+
+  // OD Geometry
+  G4UIcmdWithADoubleAndUnit* ODLateralWaterDepth;
+  G4UIcmdWithADoubleAndUnit* ODHeightWaterDepth;
+  G4UIcmdWithADoubleAndUnit* ODDeadSpace;
+  G4UIcmdWithADoubleAndUnit* ODTyvekSheetThickness;
+  G4UIcmdWithADoubleAndUnit* ODWLSPlatesThickness;
+  G4UIcmdWithADoubleAndUnit* ODWLSPlatesLength;
+  // OD PMTs
+  G4UIcmdWithAString* PMTODRadius;
+  // #PMTs and position
+  G4UIcmdWithAnInteger* PMTODperCellHorizontal;
+  G4UIcmdWithAnInteger* PMTODperCellVertical;
+  G4UIcmdWithADouble* PMTODPercentCoverage;
+  G4UIcmdWithADoubleAndUnit* ODPMTShift;
+  // isWLS constructed
+  G4UIcmdWithoutParameter* isWLSFilled;
+  // build cladding around WLS
+  G4UIcmdWithoutParameter* BuildODWLSCladding;
 
 };
 
