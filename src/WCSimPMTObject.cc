@@ -67,7 +67,7 @@ G4double* WCSimPMTObject::GetCollectionEfficiencyArray(){
 }
 
 
-
+/*
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // 3 inch
 PMT3inch::PMT3inch() {}
@@ -77,7 +77,7 @@ G4String PMT3inch::GetPMTName() {G4String PMTName = "3inch"; return PMTName;}
 G4double PMT3inch::GetExposeHeight() {return 26.19*mm;} //rough estimate looking at ETEL 9320KFLB specs
 G4double PMT3inch::GetRadius() {return 38.1*mm;}
 G4double PMT3inch::GetPMTGlassThickness() {return 0.55*cm;}//need a value for this
-float PMT3inch::HitTimeSmearing(float Q) {
+double PMT3inch::HitTimeSmearing(double Q) {
 
   G4float sig_param[4]={2.395,0.649,0.6002,2.307};
           G4float lambda_param[2]={0.7782,0.05526};
@@ -100,9 +100,9 @@ float PMT3inch::HitTimeSmearing(float Q) {
   return Smearing_factor;
 }
 
-G4float* PMT3inch::Getqpe()
+G4double* PMT3inch::Getqpe()
    {
-  static G4float qpe0[501]= {
+  static G4double qpe0[501]= {
     // 1
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
@@ -218,42 +218,42 @@ G4float* PMT3inch::Getqpe()
   };
    return qpe0;
   }
-G4float* PMT3inch::GetQEWavelength(){
-  static G4float wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
+G4double* PMT3inch::GetQEWavelength(){
+  static G4double wavelength_value[20] = { 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620., 640., 660.};
   return wavelength_value;
 }
 
-G4float* PMT3inch::GetQE(){
-  static G4float QE[20] = { 0.00, .082, .2137, .2852, .2978, .2935, .2837, .2649,.2432, .2118, .1777, .1443, .1131, .07673, .04131, .0195, .008538, 0.0, 0.0, 0.00};
+G4double* PMT3inch::GetQE(){
+  static G4double QE[20] = { 0.00, .082, .2137, .2852, .2978, .2935, .2837, .2649,.2432, .2118, .1777, .1443, .1131, .07673, .04131, .0195, .008538, 0.0, 0.0, 0.00};
   return QE;
 }
-G4float PMT3inch::GetmaxQE(){
-  const G4float maxQE = 0.2978;
+G4double PMT3inch::GetmaxQE(){
+  const G4double maxQE = 0.2978;
   return maxQE;
 }
 
 
 // Should be actual PMT Dark Rate, not effective dark rate in detector including other LE noise
-G4float PMT3inch::GetDarkRate(){
-  /* From e-mail discussion with A.Konaka and S.Nakayama:
-   * SK-I: 4.2 kHz 
-   * SK-IV:5.7 kHz, both before electronics threshold in skdetsim
-   * Measured DN with 0.25 pe threshold:
-   * SK-I: 3.4 kHz  (2003 SK-NIM: 3 kHz. A.Konaka: "2kHz with hot PMTs removed?") 
-   * SK-IV: 4.5 kHz (higher due to FRP)
-   * ToDo: investigate after updating electronics routing, whether to change value to 3.4 kHz
-   */
+G4double PMT3inch::GetDarkRate(){
+  // * From e-mail discussion with A.Konaka and S.Nakayama:
+  // * SK-I: 4.2 kHz 
+  // * SK-IV:5.7 kHz, both before electronics threshold in skdetsim
+  // * Measured DN with 0.25 pe threshold:
+  // * SK-I: 3.4 kHz  (2003 SK-NIM: 3 kHz. A.Konaka: "2kHz with hot PMTs removed?") 
+  // * SK-IV: 4.5 kHz (higher due to FRP)
+  // * ToDo: investigate after updating electronics routing, whether to change value to 3.4 kHz
+  // *
 
-  const G4float rate = 0.1*CLHEP::kilohertz;    
+  const G4double rate = 0.1*CLHEP::kilohertz;    
   return rate;
 }
 
 // Convert dark noise frequency to one before applying threshold of 0.25 pe, as that is what
 // will be simulated (WCSimWCDigitizer::AddPMTDarkRate)
-G4float PMT3inch::GetDarkRateConversionFactor(){
-  const G4float factor = 1.367;
+G4double PMT3inch::GetDarkRateConversionFactor(){
+  const G4double factor = 1.367;
   return factor;
-}
+}*/
 
 
 

@@ -531,7 +531,7 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
 	  (WCSimTrajectory*)((*(evt->GetTrajectoryContainer()))[i]);
 	 
 	if (trj->GetCharge() != 0.)
-	  trj->DrawTrajectory(50);
+	  trj->DrawTrajectory();
 
 	if(abs(trj->GetPDGEncoding()) == PDG_e && trj->GetParentID() == u+1 && trj->GetTrackID() < trkid_e) {
 	  trkid_e = trj->GetTrackID();

@@ -54,7 +54,7 @@ public:
   G4int    GetNbOfQEDefined();
 };
 
-class PMT3inch : public WCSimPMTObject
+/*class PMT3inch : public WCSimPMTObject
 {
 
 public:
@@ -66,15 +66,15 @@ public:
   G4String GetPMTName(); 
   G4double GetExposeHeight(); 
   G4double GetRadius();
-  G4float* Getqpe();
-  G4float* GetQE();
-  G4float* GetQEWavelength();
-  G4float  GetmaxQE();
+  G4double* Getqpe();
+  G4double* GetQE();
+  G4double* GetQEWavelength();
+  G4double  GetmaxQE();
   float    HitTimeSmearing(float);
   G4double GetPMTGlassThickness();
-  G4float  GetDarkRate();
-  G4float  GetDarkRateConversionFactor();
-};
+  G4double  GetDarkRate();
+  G4double  GetDarkRateConversionFactor();
+};*/
 
 
 class PMT8inch : public WCSimPMTObject

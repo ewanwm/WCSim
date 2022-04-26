@@ -149,6 +149,7 @@ public:
 
   void SetEggShapedHyperKGeometry();
   void SetEggShapedHyperKGeometry_withHPD();
+  void CylinderGeometry();
 
 
   // *** End Egg-Shaped HyperK Geometry ***
