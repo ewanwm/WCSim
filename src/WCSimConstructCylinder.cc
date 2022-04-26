@@ -201,8 +201,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 
     G4VisAttributes *showTyvekCave = new G4VisAttributes(green);
     showTyvekCave->SetForceWireframe(true);// This line is used to give definition to the rings in OGLSX Visualizer
-    logicCaveTyvek->SetVisAttributes(showTyvekCave);
-    //logicCaveTyvek->SetVisAttributes(G4VisAttributes::Invisible); //amb79
+    //logicCaveTyvek->SetVisAttributes(showTyvekCave);
+    logicCaveTyvek->SetVisAttributes(G4VisAttributes::Invisible); //amb79
 
     //-----------------------------------------------------
     // Cylinder caps' tyvek
@@ -225,8 +225,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 
     G4VisAttributes *CapsCaveTyvekVisAtt = new G4VisAttributes(yellow);
     CapsCaveTyvekVisAtt->SetForceWireframe(true);
-    logicCaveCapsTyvek->SetVisAttributes(CapsCaveTyvekVisAtt);
-    //logicCaveCapsTyvek->SetVisAttributes(G4VisAttributes::Invisible); //amb79
+    //logicCaveCapsTyvek->SetVisAttributes(CapsCaveTyvekVisAtt);
+    logicCaveCapsTyvek->SetVisAttributes(G4VisAttributes::Invisible); //amb79
 
     G4ThreeVector CaveTyvekPosition(0., 0., WCLength / 2);
 
@@ -428,11 +428,11 @@ else {
 
  // Change made here to have the if statement contain the !debugmode to be consistent
  // This code gives the Blacksheet its color. 
-
+ 
 if (Vis_Choice == "RayTracer"){
 
    G4VisAttributes* WCBarrelBlackSheetCellVisAtt 
-      = new G4VisAttributes(G4Colour(0.2,0.9,0.2)); // green color
+      = new G4VisAttributes(G4Colour(green)); // green color
      WCBarrelBlackSheetCellVisAtt->SetForceSolid(true); // force the object to be visualized with a surface
 	 WCBarrelBlackSheetCellVisAtt->SetForceAuxEdgeVisible(true); // force auxiliary edges to be shown
       if(!debugMode)
@@ -985,6 +985,7 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
     // ------------------------------------------------------------
 
     logicWCODWLSAndPMT = ConstructPMTAndWLSPlate(WCPMTODName, WCODCollectionName, "OD");
+    logicWCODWLSAndPMT->SetVisAttributes(G4VisAttributes::Invisible);
     // sphereRadius is the size along z of the logicWCODCapTyvek box containing WLS+PMT
 
     ///////////////   Barrel PMT placement
@@ -1152,48 +1153,54 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
 
 
     // loop over the cap
-    G4int CapNCell = (G4int)(WCODCapEdgeLimit/WCODCapPMTSpacing) + 2;
+    G4double WCCapCellEdge = 2.1 * m; //TODO: make this a tunable parameter//
+	  G4double WCODCapEdgeLimit = WCIDRadius;
+     
+    G4int CapNCell = (G4int)(WCODCapEdgeLimit/WCCapCellEdge) + 2;
+    G4int CapNPMTPerCell = 2;
+     
     for ( int i = -CapNCell ; i <  CapNCell; i++) {
       for (int j = -CapNCell ; j <  CapNCell; j++) {
+        for (int PMTCellIdx=0; PMTCellIdx<CapNPMTPerCell; PMTCellIdx++){
+          if (PMTCellIdx==0){ // put first pmt in upper left corner of the cell
+            xoffset = i*WCCapCellEdge + WCCapCellEdge/6.   ;
+            yoffset = j*WCCapCellEdge + 2.*WCCapCellEdge/3.;
+          }
+          else if(PMTCellIdx==1){ // put second pmt in lower right corner of the cell
+            xoffset = i*WCCapCellEdge + 5.*WCCapCellEdge/6.;
+            yoffset = j*WCCapCellEdge + WCCapCellEdge/3.   ;
+          }
 
-        xoffset = i*WCODCapPMTSpacing + WCODCapPMTSpacing*0.5;
-        yoffset = j*WCODCapPMTSpacing + WCODCapPMTSpacing*0.5;
-
-        G4ThreeVector topWLSpos = G4ThreeVector(xoffset,
-                                                yoffset,
-                                                ((WCIDHeight + 2*WCODDeadSpace)/2)+WCODTyvekSheetThickness);
-
-        G4ThreeVector bottomWLSpos = G4ThreeVector(xoffset,
-                                                   yoffset,
-                                                   -topWLSpos.getZ());
-
-        if (((sqrt(xoffset*xoffset + yoffset*yoffset) + WCPMTODRadius) < WCODCapEdgeLimit) ) {
-
-
-		  //		  std::cout << " qqqqqqqqqqqqqqqqqqqqqqqq cap i " << i << " of " << CapNCell << " j " << j << " of " << CapNCell << " Container (" << topWLSpos.x() << ", " << topWLSpos.y()
-		  //				  << ", " << topWLSpos.z() << ") " << std::endl;
-
-			G4VPhysicalVolume* physiTopCapWLSPlate =
-					new G4PVPlacement(0,                   // its rotation
-									  topWLSpos,
-									  logicWCODWLSAndPMT,   // its logical volume
-									  "WCTopCapContainerOD",// its name
-									  logicWCBarrel,       // its mother volume
-									  false,               // no boolean operations
-									  icopy);
-
-
-			G4VPhysicalVolume* physiBottomCapWLSPlate =
-					new G4PVPlacement(WCCapPMTRotation,                             // its rotation
-									  bottomWLSpos,
-									  logicWCODWLSAndPMT,   // its logical volume
-									  "WCBottomCapContainerOD",                // its name
-									  logicWCBarrel,                 // its mother volume
-									  false,                         // no boolean operations
-									  icopy);
-
-			icopy++;
-
+          G4ThreeVector topWLSpos = G4ThreeVector(xoffset,
+                                                  yoffset,
+                                                  ((WCIDHeight + 2*WCODDeadSpace)/2)+WCODTyvekSheetThickness);
+  
+          G4ThreeVector bottomWLSpos = G4ThreeVector(xoffset,
+                                                     yoffset,
+                                                     -topWLSpos.getZ());
+  
+          if (((sqrt(xoffset*xoffset + yoffset*yoffset) + WCPMTODRadius) < WCODCapEdgeLimit) ) {
+      			G4VPhysicalVolume* physiTopCapWLSPlate =
+      					new G4PVPlacement(0,                   // its rotation
+      									  topWLSpos,
+      									  logicWCODWLSAndPMT,   // its logical volume
+      									  "WCTopCapContainerOD",// its name
+      									  logicWCBarrel,       // its mother volume
+      									  false,               // no boolean operations
+      									  icopy);
+      
+      
+      			G4VPhysicalVolume* physiBottomCapWLSPlate =
+      					new G4PVPlacement(WCCapPMTRotation,                             // its rotation
+      									  bottomWLSpos,
+      									  logicWCODWLSAndPMT,   // its logical volume
+      									  "WCBottomCapContainerOD",                // its name
+      									  logicWCBarrel,                 // its mother volume
+      									  false,                         // no boolean operations
+      									  icopy);
+      
+      			icopy++;
+          }
         }
       }
     }
