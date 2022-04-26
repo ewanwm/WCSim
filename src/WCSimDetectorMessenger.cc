@@ -25,6 +25,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "Cylinder_60x74_20inchBandL_14perCent\n"
 			  "Cylinder_60x74_20inchBandL_40perCent\n"
 			  "Cylinder_12inchHPD_15perCent\n"
+			  "Cylinder\n"
 			  "HyperK\n"
 			  "HyperK_20perCent\n"
 			  "HyperKWithOD\n"
@@ -40,6 +41,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "Cylinder_60x74_20inchBandL_14perCent "
 			  "Cylinder_60x74_20inchBandL_40perCent "
 			  "Cylinder_12inchHPD_15perCent "
+			  "Cylinder "
 			  "HyperK "
 			  "HyperK_20perCent "
 			  "HyperKWithOD "
@@ -309,6 +311,9 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		} else if ( newValue == "EggShapedHyperK_withHPD") {
 		  WCSimDetector->SetIsEggShapedHyperK(true);
 		  WCSimDetector->SetEggShapedHyperKGeometry_withHPD();
+		} else if (newValue == "Cylinder") {
+			WCSimDetector->SetIsCylinder(true);
+			WCSimDetector->CylinderGeometry();
 		} else
 		  G4cout << "That geometry choice is not defined!" << G4endl;
 	}
@@ -377,6 +382,48 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	  else {
 	    G4cout << "Not egg-shaped HyperK Geometry. Detector length unchanged." << G4endl;
 	  }
+	}
+
+
+
+	if (command == cylinderTank_Height) {
+		bool isCylinder = WCSimDetector->GetIsCylinder();
+		if (isCylinder) {
+			G4cout << "Set length of cylinder " << newValue << " " << G4endl;
+            WCSimDetector->SetCylinderHeight(cylinderTank_Height->GetNewDoubleValue(newValue));
+		} else {
+			G4cout << "Not Cylinder Geometry. Detector height unchanged." << G4endl;
+		}
+	}
+
+	if (command == cylinderTank_Diameter) {
+		bool isCylinder = WCSimDetector->GetIsCylinder();
+		if (isCylinder) {
+			G4cout << "Set diameter of cylinder " << newValue << " " << G4endl;
+			WCSimDetector->SetCylinderDiameter(cylinderTank_Diameter->GetNewDoubleValue(newValue));
+		} else {
+			G4cout << "Not Cylinder Geometry. Detector diameter unchanged." << G4endl;
+		}
+	}
+
+	if (command == cylinderTank_Coverage) {
+		bool isCylinder = WCSimDetector->GetIsCylinder();
+		if (isCylinder) {
+			G4cout << "Set coverage of cylinder " << newValue << "% " << G4endl;
+			WCSimDetector->SetCylinderCoverage(cylinderTank_Coverage->GetNewDoubleValue(newValue));
+		} else {
+			G4cout << "Not Cylinder Geometry. Detector coverage unchanged." << G4endl;
+		}
+	}
+
+	if (command == cylinderTank_PMTType) {
+		bool isCylinder = WCSimDetector->GetIsCylinder();
+		if (isCylinder) {
+			G4cout << "Set PMT type of cylinder " << newValue << " " << G4endl;
+			WCSimDetector->SetCylinderPMTType(newValue);
+		} else {
+			G4cout << "Not Cylinder Geometry. Detector coverage unchanged." << G4endl;
+		}
 	}
 
 

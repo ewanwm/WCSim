@@ -40,7 +40,10 @@ class WCSimDetectorMessenger: public G4UImessenger
   G4UIcmdWithAString* PMTCollEff;
   G4UIcmdWithAString* LCConfig;
   G4UIcmdWithADoubleAndUnit* waterTank_Length;
-
+  G4UIcmdWithADoubleAndUnit* cylinderTank_Height;
+  G4UIcmdWithADoubleAndUnit* cylinderTank_Diameter;
+  G4UIcmdWithADouble* cylinderTank_Coverage;
+  G4UIcmdWithAString* cylinderTank_PMTType;
 
   G4UIcmdWithAString* tubeCmd;
   G4UIcmdWithAString* distortionCmd;

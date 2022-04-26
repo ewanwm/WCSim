@@ -139,12 +139,12 @@
 # Or you can use the G4 Particle Gun
 # for a full list of /gun/ commands see:
 # http://geant4.web.cern.ch/geant4/G4UsersDocuments/UsersGuides/ForApplicationDeveloper/html/Control/UIcommands/_gun_.html
-/mygen/generator gun
-/gun/particle e-
+#/mygen/generator gun
+#/gun/particle e-
 #/gun/particle pi0
-/gun/energy 500 MeV
-/gun/direction 1 0 0 
-/gun/position 0 0 0  
+#/gun/energy 500 MeV
+#/gun/direction 1 0 0 
+#/gun/position 0 0 0  
 
 # Or you can use the G4 General Particle Source
 # you can do a lot more with this than a monoenergetic, monodirectional, single-particle gun
@@ -155,6 +155,18 @@
 #/gps/energy 500 MeV
 #/gps/direction 1 0 0
 #/gps/position 0 0 0
+
+
+#Create a Uniform Isotropic distribution of electrons
+#/mygen/generator laser
+#/gps/particle e-
+#/gps/energy 10 MeV
+#/gps/ang/type iso
+#/gps/pos/type Volume
+#/gps/pos/shape Cylinder
+#/gps/pos/radius 3.0 m
+#/gps/pos/halfz 4.0 m
+#/gps/pos/confine WCBarrel
 
 # Or you can use the laser option
 # This is equivalent to the gps command, except that the gps particle energies are saved ignoring their mass

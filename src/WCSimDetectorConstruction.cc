@@ -237,6 +237,11 @@ WCSimPMTObject *WCSimDetectorConstruction::CreatePMTObject(G4String PMTType, G4S
      WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
       return PMT;
   }
+  else if (PMTType == "PMT3inch"){
+    WCSimPMTObject* PMT = new PMT3inch;
+    WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
+    return PMT;
+  }
   else if (PMTType == "PMT8inch"){
     WCSimPMTObject* PMT = new PMT8inch;
     WCSimDetectorConstruction::SetPMTPointer(PMT, CollectionName);
@@ -289,6 +294,25 @@ WCSimPMTObject *WCSimDetectorConstruction::CreatePMTObject(G4String PMTType, G4S
   }
 
   else { G4cout << PMTType << " is not a recognized PMT Type. Exiting WCSim." << G4endl; exit(1);}
+}
+
+void WCSimDetectorConstruction::UpdateCylinderGeometry()
+{
+  WCSimPMTObject * PMT = CreatePMTObject(cylinderTank_PMTType, WCIDCollectionName);
+  WCPMTName           = PMT->GetPMTName();
+  WCPMTExposeHeight   = PMT->GetExposeHeight();
+  WCPMTRadius         = PMT->GetRadius();
+  WCIDDiameter          = cylinderTank_Diameter;
+  WCIDHeight            = cylinderTank_Height;
+  WCBarrelPMTOffset     = WCPMTRadius; //offset from vertical
+  WCPMTPercentCoverage  = cylinderTank_Coverage;
+  WCBarrelNumPMTHorizontal = round(WCIDDiameter*sqrt(pi*WCPMTPercentCoverage)/(10.0*WCPMTRadius));
+  WCBarrelNRings           = round(((WCBarrelNumPMTHorizontal*((WCIDHeight-2*WCBarrelPMTOffset)/(pi*WCIDDiameter)))
+                                    /WCPMTperCellVertical));
+  WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal); // distance between centers of top and bottom pmts
+  WCCapEdgeLimit        = WCIDDiameter/2.0 - WCPMTRadius;
+  G4cout << "Cylinder height " << cylinderTank_Height << "mm, diameter " << cylinderTank_Diameter << "mm, coverage "
+         << cylinderTank_Coverage << "% with " << cylinderTank_PMTType << "." << G4endl;
 }
 
 void WCSimDetectorConstruction::SaveOptionsToOutput(WCSimRootOptions * wcopt)
