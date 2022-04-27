@@ -15,6 +15,7 @@
 #include "G4RotationMatrix.hh"
 #include "G4PVReplica.hh"
 #include "G4PVPlacement.hh"
+#include "G4NistManager.hh"
 #include "G4PVParameterised.hh"
 #include "G4AssemblyVolume.hh"
 #include "G4SubtractionSolid.hh"
@@ -33,6 +34,7 @@
 
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
+#include "CADMesh.hh"
 
 /***********************************************************
  *
@@ -58,9 +60,9 @@ G4Colour  cyan    (0.0, 1.0, 1.0) ;  // cyan
 G4Colour  magenta (1.0, 0.0, 1.0) ;  // magenta
 G4Colour  yellow  (1.0, 1.0, 0.0) ;  // yellow
 
-#ifndef ACTIVATE_IDPMTS
- #define ACTIVATE_IDPMTS
-#endif
+//#ifndef ACTIVATE_IDPMTS
+// #define ACTIVATE_IDPMTS
+//#endif
 
 G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 {
@@ -90,6 +92,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   innerAnnulusRadius = WCIDRadius - WCPMTExposeHeight-1.*mm;
   outerAnnulusRadius = WCIDRadius + WCBlackSheetThickness + 1.*mm;//+ Stealstructure etc.
   if(isODConstructed){
+    //std::cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";      
     G4double sphereRadius =
         (WCPMTODExposeHeight*WCPMTODExposeHeight+ WCPMTODRadius*WCPMTODRadius)/(2*WCPMTODExposeHeight);
     outerAnnulusRadius =
@@ -143,65 +146,132 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 
    logicWC->SetVisAttributes(G4VisAttributes::Invisible); //amb79
   
-  //-----------------------------------------------------
-  // everything else is contained in this water tubs
-  //-----------------------------------------------------
-  G4Tubs* solidWCBarrel = new G4Tubs("WCBarrel",
-				     0.0*m,
-				     WCRadius+1.*m, // add a bit of extra space
-				     .5*WCLength,  //jl145 - per blueprint
-				     0.*deg,
-				     360.*deg);
-
-  //  std::clog << " qqqqqqqqqqqqqqqqqqqq " << " WCRadius " << WCRadius << " WCBarrel radius " << WCRadius+1.*m << " half height "  << .5*WCLength << std::endl;
+  // -------------------------------------------------------------------------------------------------------------------
+  // this tubs of water contains all detector components except the top endcap support, cave tyvec and outer endap tyvec
+  // -------------------------------------------------------------------------------------------------------------------
+      
+  G4Tubs* solidWCBarrel_full = new G4Tubs("WCBarrel_full",
+     0.0*m,
+     WCRadius, //+1.*m, // add a bit of extra space
+     .5*WCLength, //jl145 - per blueprint //extra meter of water at the top but should be air :: TODO :: need to define opAirTySurface to implement this though 
+     0.*deg,
+     360.*deg);
+  G4SubtractionSolid *solidWCBarrel;               
+     
+  // logical volume to hold the tubs of water
+  G4LogicalVolume* logicWCBarrel;
   
-  G4LogicalVolume* logicWCBarrel = 
-    new G4LogicalVolume(solidWCBarrel,
-			G4Material::GetMaterial(water),
-			"WCBarrel",
-			0,0,0);
-
-    G4VPhysicalVolume* physiWCBarrel = 
-    new G4PVPlacement(0,
-		      G4ThreeVector(0.,0.,0.),
-		      logicWCBarrel,
-		      "WCBarrel",
-		      logicWC,
-		      false,
-	 	      0);
-
+  // logical volume to hold the top endcap structure    
+  G4LogicalVolume* logicTopStruct;
+  G4VPhysicalVolume* physiTopStruct;      
+  
+  G4LogicalSkinSurface *TopStructSurface;
+  
+  std::cout<<"isODConstructed: "<<isODConstructed<<std::endl;    
+  std::cout<<"BuildTopEndcapStruct: "<<BuildTopEndcapStruct<<std::endl;
+  std::cout<<"TopStructTyvecWrapping: "<<TopStructTyvecWrapping<<std::endl;
+  std::cout<<"TyvecAboveAirGap: "<<TyvecAboveAirGap<<std::endl;    
+                      
+  
   if(isODConstructed) {
+    
+    if(BuildTopEndcapStruct){    
+        //============================================
+        //= ************* EXPERIMENTAL ************* =
+        //= **Import Top Structure from CAD Model ** =
+        //= **************************************** =
+        //============================================
+    
+        std::cout<<" ========== construction top cap structure from CAD Model =========="<<std::endl;
+        std::cout<<"reading model from /mnt/lustre/groups/nms_epapg/k20087306/hyperk/wcsim_mine/source/WCSim/CADModels/Roof_PMT-Frame-FrameOnly-1027_ascii.stl"<<std::endl;
+        
+        auto TopStructMesh = CADMesh::TessellatedMesh::FromSTL("/mnt/lustre/groups/nms_epapg/k20087306/hyperk/wcsim_mine/source/WCSim/CADModels/Roof_PMT-Frame-FrameOnly-1027_ascii.stl"); 
+        TopStructMesh->SetScale(1000.0);
+        G4VSolid* TopStructSolid = TopStructMesh->GetSolid();
+        
+        G4NistManager* manager = G4NistManager::Instance(); 
+        logicTopStruct = 
+            new G4LogicalVolume(TopStructSolid,
+          			manager->FindOrBuildMaterial("G4_STAINLESS-STEEL"), //G4Material::GetMaterial("Blacksheet"),
+                "TopStructlogic",
+                0, 0, 0);
+    
+        physiTopStruct =       
+            new G4PVPlacement(0,
+                G4ThreeVector(0., 0., 0.5*WCIDHeight + WCBlackSheetThickness + WCODDeadSpace + WCODTyvekSheetThickness + WCODHeightWaterDepth + 1.*m), 
+                logicTopStruct,
+                "TopStruct",
+                logicWC,
+                false,
+                0,
+                true);
+        
+        if(TopStructTyvecWrapping){
+            std::cout<<"wrapping tope endcap structure in Tyvec"<<std::endl;                        
+            TopStructSurface = new G4LogicalSkinSurface("TopStructSurface", logicTopStruct, OpWaterTySurface);
+        }                        
+        
+        G4VisAttributes* StructColour = new G4VisAttributes(red);
+        StructColour->SetForceWireframe(true);
+        StructColour->SetForceSolid(true);
+        logicTopStruct->SetVisAttributes(StructColour);
+        
+        // use G4SubtractionSolid to "drill out" the water to make room for the endcap support structure
+        // essentially returns solidWCBarrel_full - TopStructSolid
+        solidWCBarrel = new G4SubtractionSolid("solidWCBarrel",
+            (G4VSolid*) solidWCBarrel_full, 
+            (G4VSolid*) TopStructSolid,
+            new G4RotationMatrix(),      
+            G4ThreeVector(0., 0., 0.5*WCIDHeight + WCBlackSheetThickness + WCODDeadSpace + WCODTyvekSheetThickness + WCODHeightWaterDepth + 1.*m));
+                                      
+        logicWCBarrel = 
+          new G4LogicalVolume(solidWCBarrel,
+      			G4Material::GetMaterial(water),
+      			"WCBarrel",
+      			0,0,0);                                                        
+                                                
+        std::cout<<" =========== Finished construction of top cap structure ==========="<<std::endl;                        
+    }
+    
+    else{ //not BuildTopEndcapStruct
+        logicWCBarrel = 
+          new G4LogicalVolume(solidWCBarrel_full,
+      			G4Material::GetMaterial(water),
+      			"WCBarrel",
+      			0,0,0);
+    }                        
+    
     //-----------------------------------------------------
     // Cylinder wall's tyvek
     //-----------------------------------------------------
 
     G4Tubs *solidCaveTyvek = new G4Tubs("WC",
-                                        WCRadius,
-                                        WCRadius + WCODTyvekSheetThickness,
-                                        .5 * WCLength,  //jl145 - per blueprint
-                                        0. * deg,
-                                        360. * deg);
+            WCRadius,
+            WCRadius + WCODTyvekSheetThickness,
+            .5 * WCLength +0.5*m,  //jl145 - per blueprint extra 1m to accomodate air gap at top
+            0. * deg,
+            360. * deg);
 
     G4LogicalVolume *logicCaveTyvek =
         new G4LogicalVolume(solidCaveTyvek,
-                            G4Material::GetMaterial("Tyvek"),
-                            "CaveTyvek",
-                            0, 0, 0);
+            G4Material::GetMaterial("Tyvek"),
+            "CaveTyvek",
+            0, 0, 0);
 
     G4VPhysicalVolume *physiCaveTyvek =
         new G4PVPlacement(0,
-                          G4ThreeVector(0., 0., 0.),
-                          logicCaveTyvek,
-						  "CaveBarrelTyvek",
-						  logicWCBarrel,
-						  false,
-                          0);
+            G4ThreeVector(0., 0., 0.5*m), //moved up to account for 1m of air at top
+            logicCaveTyvek,
+					  "CaveBarrelTyvek",
+					  logicWC,
+					  false,
+            0);
 
     G4LogicalSkinSurface *TyvekCaveBarrelSurface = new G4LogicalSkinSurface("TyvekCaveBarrelSurface", logicCaveTyvek, OpWaterTySurface);
 
-    G4VisAttributes *showTyvekCave = new G4VisAttributes(green);
+    G4VisAttributes *showTyvekCave = new G4VisAttributes(magenta);
     showTyvekCave->SetForceWireframe(true);// This line is used to give definition to the rings in OGLSX Visualizer
-    logicCaveTyvek->SetVisAttributes(showTyvekCave);
+    logicCaveTyvek->SetVisAttributes(magenta);// showTyvekCave);
     //logicCaveTyvek->SetVisAttributes(G4VisAttributes::Invisible); //amb79
 
     //-----------------------------------------------------
@@ -209,55 +279,76 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
     //-----------------------------------------------------
 
     G4Tubs *solidCaveCapsTyvek = new G4Tubs("CaveCapsTyvek",
-                                            0,
-                                            WCRadius,
-                                            .5 * (WCODTyvekSheetThickness),
-                                            0. * deg,
-                                            360. * deg);
+          0,
+          WCRadius + WCODTyvekSheetThickness,
+          .5 * (WCODTyvekSheetThickness),
+          0. * deg,
+          360. * deg);
 
     G4LogicalVolume *logicCaveCapsTyvek =
-			new G4LogicalVolume(solidCaveCapsTyvek,
-								G4Material::GetMaterial("Tyvek"),
-								"CaveCapTyvek",
-								0, 0, 0);
+    new G4LogicalVolume(solidCaveCapsTyvek,
+					G4Material::GetMaterial("Tyvek"),
+					"CaveCapTyvek",
+					0, 0, 0);
 
     G4LogicalSkinSurface *TyvekCaveTopSurface = new G4LogicalSkinSurface("TyvekCaveTopSurface", logicCaveCapsTyvek, OpWaterTySurface);
 
     G4VisAttributes *CapsCaveTyvekVisAtt = new G4VisAttributes(yellow);
     CapsCaveTyvekVisAtt->SetForceWireframe(true);
     logicCaveCapsTyvek->SetVisAttributes(CapsCaveTyvekVisAtt);
-    //logicCaveCapsTyvek->SetVisAttributes(G4VisAttributes::Invisible); //amb79
-
-    G4ThreeVector CaveTyvekPosition(0., 0., WCLength / 2);
-
+    logicCaveCapsTyvek->SetVisAttributes(G4VisAttributes::Invisible); //amb79                
+    
+    float TopTyvecPosition;
+    if(TyvecAboveAirGap) TopTyvecPosition = WCLength / 2 + 1.*m -0.05*m;
+    else TopTyvecPosition = WCLength / 2 + 0.5 * WCODTyvekSheetThickness;                
+                        
     G4VPhysicalVolume *physiTopCaveTyvek =
-        new G4PVPlacement(0,
-                          CaveTyvekPosition,
-						  logicCaveCapsTyvek,
-                          "CaveTopTyvek",
-						  logicWCBarrel,
-                          false,
-                          0);
-
-
-    CaveTyvekPosition.setZ(-CaveTyvekPosition.getZ());
+    new G4PVPlacement(0,
+          G4ThreeVector(0., 0., TopTyvecPosition), //+ 1.*m -0.05*m for extra metre of air at the top 
+				  logicCaveCapsTyvek,
+          "CaveTopTyvek",
+				  logicWC,
+          false,
+          0);
 
     G4VPhysicalVolume *physiBottomCaveTyvek =
-        new G4PVPlacement(0,
-                          CaveTyvekPosition,
-						  logicCaveCapsTyvek,
-                          "CaveBottomTyvek",
-						  logicWCBarrel,
-                          false,
-                          0);
+    new G4PVPlacement(0,
+          G4ThreeVector(0., 0., - WCLength / 2 - 0.5 * WCODTyvekSheetThickness),
+				  logicCaveCapsTyvek, 
+          "CaveBottomTyvek",
+				  logicWC,
+          false,
+          0);
 
-
+  logicCaveCapsTyvek->SetVisAttributes(magenta);
+    
   } // END Tyvek cave
-  //-----------------------------------------------------
+  
+  else{ //not isODConstructed
+      logicWCBarrel = 
+          new G4LogicalVolume(solidWCBarrel_full,
+      			G4Material::GetMaterial(water),
+      			"WCBarrel",
+      			0,0,0);
+  }
+  
+  //  std::clog << " #################### " << " WCRadius " << WCRadius << " WCBarrel radius " << WCRadius+1.*m << " half height "  << .5*WCLength << std::endl;
+
+  G4VPhysicalVolume* physiWCBarrel = 
+  new G4PVPlacement(0,
+      G4ThreeVector(0.,0.,0.), 
+      logicWCBarrel,
+      "WCBarrel",
+      logicWC,
+      false,
+      0);
+
+  logicWCBarrel->SetVisAttributes(cyan); //G4VisAttributes::Invisible); 
 
 // This volume needs to made invisible to view the blacksheet and PMTs with RayTracer
   if (Vis_Choice == "RayTracer")
-   {logicWCBarrel->SetVisAttributes(G4VisAttributes::Invisible);} 
+   {//logicWCBarrel->SetVisAttributes(G4VisAttributes::Invisible);
+   } 
 
   else
    {//{if(!debugMode)
@@ -275,13 +366,13 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   G4double mainAnnulusRmax[2] = {outerAnnulusRadius, outerAnnulusRadius};
 
   G4Polyhedra* solidWCBarrelAnnulus = new G4Polyhedra("WCBarrelAnnulus",
-                                                   0.*deg, // phi start
-                                                   totalAngle, 
-                                                   (G4int)WCBarrelRingNPhi, //NPhi-gon
-                                                   2,
-                                                   mainAnnulusZ,
-                                                   mainAnnulusRmin,
-                                                   mainAnnulusRmax);
+       0.*deg, // phi start
+       totalAngle, 
+       (G4int)WCBarrelRingNPhi, //NPhi-gon
+       2,
+       mainAnnulusZ,
+       mainAnnulusRmin,
+       mainAnnulusRmax);
   
   G4LogicalVolume* logicWCBarrelAnnulus = 
     new G4LogicalVolume(solidWCBarrelAnnulus,
@@ -306,13 +397,13 @@ if(!debugMode)
                         barrelCellHeight/2.};
 
   G4Polyhedra* solidWCBarrelRing = new G4Polyhedra("WCBarrelRing",
-                                                   0.*deg,//+dPhi/2., // phi start
-                                                   totalAngle, //phi end
-                                                   (G4int)WCBarrelRingNPhi, //NPhi-gon
-                                                   2,
-                                                   RingZ,
-                                                   mainAnnulusRmin,
-                                                   mainAnnulusRmax);
+         0.*deg,//+dPhi/2., // phi start
+         totalAngle, //phi end
+         (G4int)WCBarrelRingNPhi, //NPhi-gon
+         2,
+         RingZ,
+         mainAnnulusRmin,
+         mainAnnulusRmax);
 
   G4LogicalVolume* logicWCBarrelRing = 
     new G4LogicalVolume(solidWCBarrelRing,
@@ -349,7 +440,7 @@ else {
   G4Polyhedra* solidWCBarrelCell = new G4Polyhedra("WCBarrelCell",
                                                    -dPhi/2.+0.*deg, // phi start
                                                    dPhi, //total Phi
-                                                   1, //NPhi-gon
+                                                   1, //NPhi-gon 
                                                    2,
                                                    RingZ,
                                                    mainAnnulusRmin,
@@ -430,7 +521,6 @@ else {
  // This code gives the Blacksheet its color. 
 
 if (Vis_Choice == "RayTracer"){
-
    G4VisAttributes* WCBarrelBlackSheetCellVisAtt 
       = new G4VisAttributes(G4Colour(0.2,0.9,0.2)); // green color
      WCBarrelBlackSheetCellVisAtt->SetForceSolid(true); // force the object to be visualized with a surface
@@ -642,7 +732,6 @@ else {
 
 	  //Add the top veto Tyvek
 	  //-----------------------------------------------------
-
 	  G4VSolid* solidWCTVTyvek;
 	  solidWCTVTyvek =
 			new G4Tubs(			"WCTVTyvek",
@@ -709,6 +798,7 @@ else {
 				 				false,0,true);
 
           G4LogicalSkinSurface *WaterTyTVSurfaceSurface = new G4LogicalSkinSurface("WaterTyTVSurfaceSide", logicWCTVTyvekSide, OpWaterTySurface);
+          
   }
 
   //
@@ -889,6 +979,10 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
     // OD Tyvek Caps
     // ------------------------------------------------------------
 
+    std::cout<<"============================================================================================================================================================================="<<std::endl;
+    std::cout<<"construction OD Tyvek caps"<<std::endl;
+    std::cout<<"============================================================================================================================================================================="<<std::endl;
+    
     G4Tubs* solidWCODCapsTyvek = new G4Tubs("WCODCapsTyvek",
                                             0,
                                             WCIDRadius,
@@ -1619,7 +1713,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
    = new G4VisAttributes(G4Colour(1.0,1.0,0.0));
 
 	if(!debugMode)
-       //logicWCCapBlackSheet->SetVisAttributes(G4VisAttributes::Invisible); //Use this line if you want to make the blacksheet on the caps invisible to view through
+     //logicWCCapBlackSheet->SetVisAttributes(G4VisAttributes::Invisible); //Use this line if you want to make the blacksheet on the caps invisible to view through
 	   logicWCCapBlackSheet->SetVisAttributes(WCCapBlackSheetVisAtt);
     else
         logicWCCapBlackSheet->SetVisAttributes(WCCapBlackSheetVisAtt);}

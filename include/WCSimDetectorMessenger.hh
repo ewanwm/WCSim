@@ -67,6 +67,12 @@ class WCSimDetectorMessenger: public G4UImessenger
   G4UIcmdWithoutParameter* isWLSFilled;
   // build cladding around WLS
   G4UIcmdWithoutParameter* BuildODWLSCladding;
+  // include the top endcap support structure 
+  G4UIcmdWithoutParameter* BuildTopEndcapStruct;
+  // if true, tyvec is placed 1m above the water (on the bottom surface of the top plate of the endcap structure)
+  G4UIcmdWithAString* TyvecAboveAirGap;
+  // if true, the top endcap support structure is wrapped in tyvec
+  G4UIcmdWithAString* TopStructTyvecWrapping;
 
 };
 
