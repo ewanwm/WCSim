@@ -347,7 +347,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
 
 // This volume needs to made invisible to view the blacksheet and PMTs with RayTracer
   if (Vis_Choice == "RayTracer")
-   {//logicWCBarrel->SetVisAttributes(G4VisAttributes::Invisible);
+   {logicWCBarrel->SetVisAttributes(G4VisAttributes::Invisible);
    } 
 
   else
