@@ -218,6 +218,26 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   BuildODWLSCladding = new G4UIcmdWithoutParameter("/WCSim/HyperKOD/BuildODWLSCladding", this);
   BuildODWLSCladding->SetGuidance("Build reflective cladding around WLS plate");
 
+  // include the top endcap support structure 
+  BuildTopEndcapStruct = new G4UIcmdWithoutParameter("/WCSim/HyperKOD/BuildTopEndcapStruct", this);
+  BuildTopEndcapStruct ->SetGuidance("Build the stainless steel support structure for the top endcap");      
+
+  // if true, tyvec is placed 1m above the water (on the bottom surface of the top plate of the endcap structure)
+  TyvecAboveAirGap = new G4UIcmdWithAString("/WCSim/HyperKOD/TyvecAboveAirGap", this);
+  TyvecAboveAirGap ->SetGuidance("If true, the top wndcap tyvec will be placed 1m above the water at the top of the detector");    
+  TyvecAboveAirGap ->SetGuidance("true or false");
+  TyvecAboveAirGap ->SetParameterName("TyvecAboveAirGap", false);
+  TyvecAboveAirGap ->SetCandidates("true false");
+  TyvecAboveAirGap ->AvailableForStates(G4State_PreInit, G4State_Idle);
+      
+  // if true, the top endcap support structure is wrapped in tyvec
+  TopStructTyvecWrapping = new G4UIcmdWithAString("/WCSim/HyperKOD/TopStructTyvecWrapping", this);
+  TopStructTyvecWrapping ->SetGuidance("If true, the top and BuildTopEndcapStruct is tue, the top endcap support structure will be wrapped in tyvec");
+  TopStructTyvecWrapping ->SetGuidance("true or false");
+  TopStructTyvecWrapping ->SetParameterName("TopStructTyvecWrapping", false);
+  TopStructTyvecWrapping ->SetCandidates("true false");
+  TopStructTyvecWrapping ->AvailableForStates(G4State_PreInit, G4State_Idle);
+  
   /////////// END OD //////////////
   /////////////////////////////////
 
@@ -500,12 +520,30 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
       G4cout << "Deactivate WLS plates by filling them with water " << G4endl;
       WCSimDetector->SetIsWLSFilled(false);
     }
-
+    
     if(command == BuildODWLSCladding) {
       WCSimDetector->SetODEdited(true);
       G4cout << "Add cladding around WLS plate " << G4endl;
       WCSimDetector->SetBuildODWLSCladding(true);
     }
+    
+    if(command == BuildTopEndcapStruct) {
+      WCSimDetector->SetODEdited(true);
+      G4cout << "Set top endcap support structure to be built " << G4endl;
+      WCSimDetector->SetBuildTopEndcapStruct(true);
+    }
+                
+    if(command == TopStructTyvecWrapping) {
+      WCSimDetector->SetODEdited(true);
+      G4cout << "Wrapping top endcap support structure in tyvec " << G4endl;
+      WCSimDetector->SetTopStructTyvecWrapping(newValue);
+    }    
+    
+    if(command == TyvecAboveAirGap) {
+      WCSimDetector->SetODEdited(true);
+      G4cout << "top endcap tyvec to be placed 1m about water " << G4endl;
+      WCSimDetector->SetTyvecAboveAirGap(newValue);
+    }                            
 
 
     /////////// END OD //////////////
