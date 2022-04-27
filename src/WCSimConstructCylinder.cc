@@ -658,6 +658,8 @@ else {
 								G4Material::GetMaterial("Tyvek"),
 								"WCTVTyvek",
 								0,0,0);
+                                                 
+    //logicWCTVTyvek->SetVisAttributes(G4VisAttributes(magenta));
 
 	  //Bottom
 	  G4VPhysicalVolume* physiWCTVTyvekBot =
@@ -900,13 +902,9 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
                             "WCODTopCapTyvek",
                             0,0,0);
 
-    G4VisAttributes* WCCapsODTyvekCellVisAtt =
-        new G4VisAttributes(yellow);
-    WCCapsODTyvekCellVisAtt->SetForceWireframe(true);
-
     logicWCODCapTyvek->SetVisAttributes(G4VisAttributes::Invisible);
     //// Uncomment following for TYVEK visualization
-    logicWCODCapTyvek->SetVisAttributes(WCCapsODTyvekCellVisAtt);
+    logicWCODCapTyvek->SetVisAttributes(G4VisAttributes(magenta)); 
 
     G4ThreeVector CapTyvekPosition(0.,0.,(WCIDHeight + 2*WCODDeadSpace)/2);
 
@@ -959,14 +957,14 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
                             "WCBarrelCellODTyvek",
                             0,0,0);
 
-    G4VisAttributes* WCBarrelODTyvekCellVisAtt =
-        new G4VisAttributes(yellow);
-    WCBarrelODTyvekCellVisAtt->SetForceWireframe(true);
-    WCBarrelODTyvekCellVisAtt->SetForceAuxEdgeVisible(true); // force auxiliary edges to be shown
+    //G4VisAttributes* WCBarrelODTyvekCellVisAtt =
+    //    new G4VisAttributes(yellow);
+    //WCBarrelODTyvekCellVisAtt->SetForceWireframe(true);
+    //WCBarrelODTyvekCellVisAtt->SetForceAuxEdgeVisible(true); // force auxiliary edges to be shown
 
     logicWCBarrelCellODTyvek->SetVisAttributes(G4VisAttributes::Invisible);
     //// Uncomment following for TYVEK visualization
-    logicWCBarrelCellODTyvek->SetVisAttributes(WCBarrelODTyvekCellVisAtt);
+    logicWCBarrelCellODTyvek->SetVisAttributes(G4VisAttributes(magenta));
 
 
     G4VPhysicalVolume* physiWCBarrelCellODTyvek =
@@ -1090,7 +1088,7 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
 
       logicWCTowerODTyvek->SetVisAttributes(G4VisAttributes::Invisible);
       //// Uncomment following for TYVEK visualization
-      logicWCTowerODTyvek->SetVisAttributes(WCBarrelODTyvekCellVisAtt);
+      logicWCTowerODTyvek->SetVisAttributes(magenta);
 
 
       G4VPhysicalVolume* physiWCTowerODTyvek =
