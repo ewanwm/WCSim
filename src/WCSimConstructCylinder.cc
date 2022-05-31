@@ -182,10 +182,11 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
         //= **************************************** =
         //============================================
     
+        std::string modelLoc = "/users/k20087306/hyperk/WCSim/WCSim/CADModels/Roof_PMT-Frame-FrameOnly-1027_ascii.stl";    
         std::cout<<" ========== construction top cap structure from CAD Model =========="<<std::endl;
-        std::cout<<"reading model from /mnt/lustre/groups/nms_epapg/k20087306/hyperk/wcsim_mine/source/WCSim/CADModels/Roof_PMT-Frame-FrameOnly-1027_ascii.stl"<<std::endl;
+        std::cout<<"reading model from "<<modelLoc<<std::endl;
         
-        auto TopStructMesh = CADMesh::TessellatedMesh::FromSTL("/mnt/lustre/groups/nms_epapg/k20087306/hyperk/wcsim_mine/source/WCSim/CADModels/Roof_PMT-Frame-FrameOnly-1027_ascii.stl"); 
+        auto TopStructMesh = CADMesh::TessellatedMesh::FromSTL(modelLoc); 
         TopStructMesh->SetScale(1000.0);
         G4VSolid* TopStructSolid = TopStructMesh->GetSolid();
         
