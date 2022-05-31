@@ -127,7 +127,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 # To use <unordered_map>, ie. use C++11 now from GCC 4.4 onwards support for unordered_maps.
 # Had to change G4float to G4double for QE because of double arithmatic inside the array.
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.7)
-    set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -std=c++11")
+    set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -std=c++14")
 else()
     set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} -std=c++0x")
 endif()
