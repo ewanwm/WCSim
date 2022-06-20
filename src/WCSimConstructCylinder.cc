@@ -1117,6 +1117,8 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
     WCPMTODPercentCoverage = RealODCoverage*100;
     WCODCapPMTSpacing  = (pi*WCIDDiameter/(round(WCIDDiameter*sqrt(pi*WCPMTODPercentCoverage)/(10.0*WCPMTODRadius))));
 
+    int nBarrelPMTs = 0;
+        
     if((G4int)WCPMTODperCellHorizontal == 0 && (G4int)WCPMTODperCellVertical == 0){
       ComputeWCODPMT((G4int)NPMTODByCell,&WCPMTODperCellHorizontal,&WCPMTODperCellVertical);
     }
@@ -1144,6 +1146,8 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
                               false,                     // no boolean operations
                               (int)(i*WCPMTODperCellVertical+j),
                               true);
+                              
+        nBarrelPMTs ++;                                                            
 
 
       }
@@ -1228,12 +1232,19 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
 									  false,                     // no boolean operations
 									  (int)(i*WCPMTODperCellVertical+j),
 									  true);
+                                                                              
+     nBarrelPMTs ++;                                                                                                                                                            
 
 
         }
       }
 
     }
+    
+    G4cout << "################## OD Barrel ##################" << "\n";
+    G4cout << " total number of PMTs on barrel: " << nBarrelPMTs << "\n";
+    G4cout << " Coverage was calculated to be: " << (nBarrelPMTs*WCPMTODRadius*WCPMTODRadius *3.14/(WCIDRadius*WCIDHeight)) << "\n";
+    G4cout << "###############################################" << "\n";            
 
     //---------------------------------------------------------
     // Add top and bottom PMTs
@@ -1248,7 +1259,7 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
 
 
     // loop over the cap
-    G4double WCCapCellEdge = 2.1 * m; //TODO: make this a tunable parameter//
+    G4double WCCapCellEdge = 2.121 * m; //TODO: make this a tunable parameter//
 	  G4double WCODCapEdgeLimit = WCIDRadius;
      
     G4int CapNCell = (G4int)(WCODCapEdgeLimit/WCCapCellEdge) + 2;
@@ -1300,10 +1311,10 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
       }
     }
 
-    G4cout << "#### OD ####" << "\n";
-    G4cout << " total on cap: " << icopy << "\n";
+    G4cout << "################## OD Endcaps #################" << "\n";
+    G4cout << " total number of PMTs on cap: " << icopy << "\n";
     G4cout << " Coverage was calculated to be: " << (icopy*WCPMTODRadius*WCPMTODRadius/(WCIDRadius*WCIDRadius)) << "\n";
-    G4cout << "############" << "\n";
+    G4cout << "###############################################" << "\n";
 
   } // END if isODConstructed
 
