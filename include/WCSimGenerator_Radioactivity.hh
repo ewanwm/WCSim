@@ -147,6 +147,9 @@ class WCSimGenerator_Radioactivity
 		static G4double fZ_max_FV;
 		static G4double fR_max_FV;
 		static G4double fR2_max_FV;
+   
+   static G4double R_min;
+   static G4double Z_min;
 		
 };
 #endif

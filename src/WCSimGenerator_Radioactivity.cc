@@ -42,6 +42,8 @@ G4double WCSimGenerator_Radioactivity::fZ_max_FV			= 0.;
 G4double WCSimGenerator_Radioactivity::fR_max_FV			= 0.;
 G4double WCSimGenerator_Radioactivity::fR2_max_FV			= 0.;
 
+G4double WCSimGenerator_Radioactivity::Z_min		  	= 0.;
+G4double WCSimGenerator_Radioactivity::R_min    		= 0.;
 
 // Parameter array initialization:
 G4double WCSimGenerator_Radioactivity::vParam_Z [RNMODEL_BIN_R_MAX][7]	= {};	
@@ -95,11 +97,14 @@ void WCSimGenerator_Radioactivity::Initialize() {
 //	fRn_PerPMT   = 24.; // mBq/PMT (equilibrium), assuming 20 mBq/Band +  4 mBq/PMT 
 		
 	// Detector size:
-	fCurrentDetector_Z_max   = myDetector->GetIDHeight() / CLHEP::m / 2.;
+	fCurrentDetector_Z_max   = myDetector->GetODHeight() / CLHEP::m / 2.;
 	fCurrentDetector_Z_min   = -1. * fCurrentDetector_Z_max;
-	fCurrentDetector_R_max   = myDetector->GetIDRadius() / CLHEP::m;
+	fCurrentDetector_R_max   = myDetector->GetODRadius() / CLHEP::m;
 	fCurrentDetector_R2_max  = fCurrentDetector_R_max * fCurrentDetector_R_max;
 	
+  Z_min   = myDetector->GetIDHeight() / CLHEP::m / 2.;
+	R_min   = myDetector->GetIDRadius() / CLHEP::m;
+ 
 	// Constant
 	fSK_Z_max   = 36.200  / 2.;
 	fSK_Z_min   = -1. * fSK_Z_max;
@@ -143,6 +148,8 @@ void WCSimGenerator_Radioactivity::Configuration(G4int iScenario, G4double dLife
 	G4cout << " Mean lifetime: " << log(2) / fRnLambda << " sec " <<  G4endl;
 	G4cout << " Lambda:   " << fRnLambda << "     " <<  G4endl;
 	G4cout << " Activity on ID border:   " << fRn_Border << " mBq/m^3  " <<  G4endl;
+  G4cout << " Min, Max radius:   " << R_min <<", "<< fR_max <<  G4endl;
+  G4cout << " Min, Max Z:   " << Z_min <<", "<< fZ_max <<  G4endl;
 	if ( fScenario == 0 ) {
 		G4cout << " Scenario 0: Uniform Rn concentration is assumed " << G4endl;
 		fConcentrationID = 0;
@@ -447,8 +454,15 @@ G4ThreeVector WCSimGenerator_Radioactivity::GetRandomVertex(G4int tSymNumber) {
 	
 	
 	if ( fScenario == 0 ) {
-		R2 = G4UniformRand() * (fR_max * fR_max);
-		Z  = G4UniformRand() * (fZ_max * 2.) - fZ_max;
+    for(int i =0; i < 100000000; i++){
+  		R2 = G4UniformRand() * (fR_max * fR_max);
+  		Z  = G4UniformRand() * (fZ_max * 2.) - fZ_max;
+     
+      if((R2 > R_min *R_min) | (Z > Z_min) | (Z < -Z_min)){
+        std::cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
+        break;
+      }
+    }
 	}
 	else {
 		tfRnFunction->GetRandom2(R2_ref,Z_ref);

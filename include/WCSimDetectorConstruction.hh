@@ -213,6 +213,10 @@ public:
   G4double GetWCIDHeight(){return WCIDHeight;}
   G4double GetIDRadius()     {return WCIDRadius;}
   G4double GetIDHeight()     {return WCIDHeight;}
+  
+  // assume 1m depth of OD in barrel and 2m in endcaps and 60cm dead region
+  G4double GetODRadius()     {return WCIDRadius +1.6*1000.0;}
+  G4double GetODHeight()     {return WCIDHeight +5.2*1000.0;}
  
 private:
 

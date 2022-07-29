@@ -332,7 +332,7 @@ void WCSimDetectorConstruction::UpdateODGeo()
 
   WCODCapPMTSpacing  = (pi*WCIDDiameter/(round(WCIDDiameter*sqrt(pi*WCPMTODPercentCoverage)/(10.0*WCPMTODRadius))));
   WCODCapEdgeLimit = std::min(WCIDDiameter/2.0 - WCPMTODRadius, WCIDDiameter/2.0 - WCODWLSPlatesLength/2);
-
+ 
   std::vector<G4String> WCColName;
   WCColName.push_back(WCIDCollectionName);
   WCColName.push_back(WCODCollectionName);
