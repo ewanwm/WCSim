@@ -259,7 +259,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
         //= **************************************** =
         //============================================
     
-        std::string modelLoc = "/users/k20087306/hyperk/WCSim/WCSim/CADModels/Roof_PMT-Frame-FrameOnly-1027_ascii.stl";    
+        std::string modelLoc = SupportStructCADFile;    
         std::cout<<" ========== construction top cap structure from CAD Model =========="<<std::endl;
         std::cout<<"reading model from "<<modelLoc<<std::endl;
         
