@@ -252,7 +252,6 @@ public:
 
   void SetEggShapedHyperKGeometry();
   void SetEggShapedHyperKGeometry_withHPD();
-  void CylinderGeometry();
 
 
   // *** End Egg-Shaped HyperK Geometry ***
@@ -494,6 +493,7 @@ public:
   void SetBuildODWLSCladding(G4bool val){BuildODWLSCladding = val;}
   void SetBuildTopEndcapStruct(G4bool val){BuildTopEndcapStruct = val;}
   void SetTyvecAboveAirGap(G4bool val){TyvecAboveAirGap = val;}
+  void SetSupportStructCADFile(G4String val){SupportStructCADFile = val;}
   void SetTopStructTyvecWrapping(G4bool val){TopStructTyvecWrapping = val;}
   G4bool GetODEdited(){return odEdited;}
 
@@ -556,7 +556,7 @@ private:
   WCSimDetectorMessenger* messenger;
 
   // The Construction routines
-  G4LogicalVolume* ConstructCylinder();
+  G4LogicalVolume*   ConstructCylinder();
 
   G4LogicalVolume* ConstructPMT(G4String,G4String,G4String detectorElement="tank",G4int nIDPMTs=1);//Modified by B.Quilain 2018/12 to implement hybrid detector
   G4LogicalVolume* ConstructMultiPMT(G4String,G4String, G4String detectorElement="tank",G4int nIDPMTs=1); 
@@ -759,11 +759,12 @@ private:
   // WLS material name
   bool isWLSFilled;
   bool BuildODWLSCladding;
-  
+
   // top endcap support struct 
   bool BuildTopEndcapStruct;
   bool TyvecAboveAirGap;
   bool TopStructTyvecWrapping;
+  G4String SupportStructCADFile;
 
   // ############################# //
   // # *** END OD Parameters *** # //
@@ -897,15 +898,7 @@ private:
   G4int  LCType;     // 0: No LC, 1: Old Branch(Mirror), 2: 2018Oct(Mirror)
 
   // *** End egg-shaped HyperK Geometry ***
-// *** Begin Cylinder Geometry
 
-    G4double cylinderTank_Height;
-    G4double cylinderTank_Diameter;
-    G4double cylinderTank_Coverage;
-    G4String cylinderTank_PMTType;
-    G4bool isCylinder;
-
-// *** End Cylinder Geometry
   // amb79: debug to display all parts
   bool debugMode;
 

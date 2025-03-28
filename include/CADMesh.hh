@@ -37,22 +37,6 @@
 
 #pragma once
 
-<<<<<<< HEAD
-class BuiltInReader;
-class CADMeshTemplate;
-class Mesh;
-class STLReader;
-class ASSIMPReader;
-class PLYReader;
-class FileTypes;
-class OBJReader;
-class Exceptions;
-class TetrahedralMesh;
-class Reader;
-class Lexer;
-class LexerMacros;
-class TessellatedMesh;
-=======
 class Reader;
 class LexerMacros;
 class OBJReader;
@@ -67,7 +51,6 @@ class TessellatedMesh;
 class CADMeshTemplate;
 class ASSIMPReader;
 class Lexer;
->>>>>>> origin/develop
 
 #include "G4String.hh"
 
@@ -556,11 +539,7 @@ namespace CADMesh {
 
 namespace File {
 
-<<<<<<< HEAD
-inline Type TypeFromExtension(G4String extension) {
-=======
 Type TypeFromExtension(G4String extension) {
->>>>>>> origin/develop
   std::for_each(extension.begin(), extension.end(),
                 [](char &e) { e = ::tolower(e); });
 
@@ -573,11 +552,7 @@ Type TypeFromExtension(G4String extension) {
   return Unknown;
 }
 
-<<<<<<< HEAD
-inline Type TypeFromName(G4String name) {
-=======
 Type TypeFromName(G4String name) {
->>>>>>> origin/develop
   auto extension = name.substr(name.find_last_of(".") + 1);
 
   return TypeFromExtension(extension);
@@ -587,17 +562,6 @@ Type TypeFromName(G4String name) {
 
 namespace CADMesh {
 
-<<<<<<< HEAD
-inline Mesh::Mesh(Points points, Triangles triangles, G4String name)
-    : name_(name), points_(points), triangles_(triangles) {}
-
-inline std::shared_ptr<Mesh> Mesh::New(Points points, Triangles triangles,
-                                       G4String name) {
-  return std::make_shared<Mesh>(points, triangles, name);
-}
-
-inline std::shared_ptr<Mesh> Mesh::New(Triangles triangles, G4String name) {
-=======
 Mesh::Mesh(Points points, Triangles triangles, G4String name)
     : name_(name), points_(points), triangles_(triangles) {}
 
@@ -607,26 +571,11 @@ std::shared_ptr<Mesh> Mesh::New(Points points, Triangles triangles,
 }
 
 std::shared_ptr<Mesh> Mesh::New(Triangles triangles, G4String name) {
->>>>>>> origin/develop
   Points points;
 
   return New(points, triangles, name);
 }
 
-<<<<<<< HEAD
-inline std::shared_ptr<Mesh> Mesh::New(std::shared_ptr<Mesh> mesh,
-                                       G4String name) {
-  return New(mesh->GetPoints(), mesh->GetTriangles(), name);
-}
-
-inline G4String Mesh::GetName() { return name_; }
-
-inline Points Mesh::GetPoints() { return points_; }
-
-inline Triangles Mesh::GetTriangles() { return triangles_; }
-
-inline G4bool Mesh::IsValidForNavigation() {
-=======
 std::shared_ptr<Mesh> Mesh::New(std::shared_ptr<Mesh> mesh, G4String name) {
   return New(mesh->GetPoints(), mesh->GetTriangles(), name);
 }
@@ -638,7 +587,6 @@ Points Mesh::GetPoints() { return points_; }
 Triangles Mesh::GetTriangles() { return triangles_; }
 
 G4bool Mesh::IsValidForNavigation() {
->>>>>>> origin/develop
   std::map<G4ThreeVector, size_t> point_index;
 
   size_t index = 0;
@@ -696,15 +644,6 @@ namespace CADMesh {
 
 namespace File {
 
-<<<<<<< HEAD
-inline Reader::Reader(G4String reader_name) : name_(reader_name) {}
-
-inline Reader::~Reader() {}
-
-inline G4String Reader::GetName() { return name_; }
-
-inline std::shared_ptr<Mesh> Reader::GetMesh() {
-=======
 Reader::Reader(G4String reader_name) : name_(reader_name) {}
 
 Reader::~Reader() {}
@@ -712,7 +651,6 @@ Reader::~Reader() {}
 G4String Reader::GetName() { return name_; }
 
 std::shared_ptr<Mesh> Reader::GetMesh() {
->>>>>>> origin/develop
   if (meshes_.size() > 0) {
     return meshes_[0];
   }
@@ -720,11 +658,7 @@ std::shared_ptr<Mesh> Reader::GetMesh() {
   return nullptr;
 }
 
-<<<<<<< HEAD
-inline std::shared_ptr<Mesh> Reader::GetMesh(size_t index) {
-=======
 std::shared_ptr<Mesh> Reader::GetMesh(size_t index) {
->>>>>>> origin/develop
   if (index < meshes_.size()) {
     return meshes_[index];
   }
@@ -734,11 +668,7 @@ std::shared_ptr<Mesh> Reader::GetMesh(size_t index) {
   return nullptr;
 }
 
-<<<<<<< HEAD
-inline std::shared_ptr<Mesh> Reader::GetMesh(G4String name, G4bool exact) {
-=======
 std::shared_ptr<Mesh> Reader::GetMesh(G4String name, G4bool exact) {
->>>>>>> origin/develop
   for (auto mesh : meshes_) {
     if (exact) {
       if (mesh->GetName() == name)
@@ -756,29 +686,17 @@ std::shared_ptr<Mesh> Reader::GetMesh(G4String name, G4bool exact) {
   return nullptr;
 }
 
-<<<<<<< HEAD
-inline Meshes Reader::GetMeshes() { return meshes_; }
-
-inline size_t Reader::GetNumberOfMeshes() { return meshes_.size(); }
-
-inline size_t Reader::AddMesh(std::shared_ptr<Mesh> mesh) {
-=======
 Meshes Reader::GetMeshes() { return meshes_; }
 
 size_t Reader::GetNumberOfMeshes() { return meshes_.size(); }
 
 size_t Reader::AddMesh(std::shared_ptr<Mesh> mesh) {
->>>>>>> origin/develop
   meshes_.push_back(mesh);
 
   return meshes_.size();
 }
 
-<<<<<<< HEAD
-inline void Reader::SetMeshes(Meshes meshes) { meshes_ = meshes; }
-=======
 void Reader::SetMeshes(Meshes meshes) { meshes_ = meshes; }
->>>>>>> origin/develop
 }
 }
 
@@ -790,11 +708,7 @@ namespace CADMesh {
 
 namespace File {
 
-<<<<<<< HEAD
-inline Lexer::Lexer(std::string filepath, State *initial_state) {
-=======
 Lexer::Lexer(std::string filepath, State *initial_state) {
->>>>>>> origin/develop
   std::ifstream file(filepath);
   input_ = std::string((std::istreambuf_iterator<char>(file)),
                        std::istreambuf_iterator<char>());
@@ -804,19 +718,11 @@ Lexer::Lexer(std::string filepath, State *initial_state) {
   }
 }
 
-<<<<<<< HEAD
-inline std::string Lexer::String() {
-  return input_.substr(start_, position_ - start_);
-}
-
-inline void Lexer::Run(State *initial_state, size_t lines) {
-=======
 std::string Lexer::String() {
   return input_.substr(start_, position_ - start_);
 }
 
 void Lexer::Run(State *initial_state, size_t lines) {
->>>>>>> origin/develop
   parent_item_ = new Item{ParentToken, position_,          line_, "", "",
                           nullptr,     std::vector<Item>()};
 
@@ -832,15 +738,9 @@ void Lexer::Run(State *initial_state, size_t lines) {
   }
 }
 
-<<<<<<< HEAD
-inline Items Lexer::GetItems() { return parent_item_->children; }
-
-inline void Lexer::Backup() {
-=======
 Items Lexer::GetItems() { return parent_item_->children; }
 
 void Lexer::Backup() {
->>>>>>> origin/develop
   position_ -= width_;
 
   auto next = input_.substr(position_, 1);
@@ -850,22 +750,14 @@ void Lexer::Backup() {
   }
 }
 
-<<<<<<< HEAD
-inline void Lexer::BackupTo(int position) {
-=======
 void Lexer::BackupTo(int position) {
->>>>>>> origin/develop
   auto s = input_.substr(position, position_ - position);
   line_ -= std::count(s.begin(), s.end(), '\n');
 
   position_ = position;
 }
 
-<<<<<<< HEAD
-inline std::string Lexer::Next() {
-=======
 std::string Lexer::Next() {
->>>>>>> origin/develop
   if (position_ >= input_.length()) {
     return "";
   }
@@ -881,11 +773,7 @@ std::string Lexer::Next() {
   return next;
 }
 
-<<<<<<< HEAD
-inline std::string Lexer::Peek() {
-=======
 std::string Lexer::Peek() {
->>>>>>> origin/develop
   auto next = Next();
 
   if (next != "")
@@ -894,15 +782,9 @@ std::string Lexer::Peek() {
   return next;
 }
 
-<<<<<<< HEAD
-inline void Lexer::Skip() { start_ = position_; }
-
-inline Item *Lexer::ThisIsA(Token token, std::string error) {
-=======
 void Lexer::Skip() { start_ = position_; }
 
 Item *Lexer::ThisIsA(Token token, std::string error) {
->>>>>>> origin/develop
   if (dry_run_)
     return nullptr;
 
@@ -926,11 +808,7 @@ Item *Lexer::ThisIsA(Token token, std::string error) {
   }
 }
 
-<<<<<<< HEAD
-inline Item *Lexer::StartOfA(Token token, std::string error) {
-=======
 Item *Lexer::StartOfA(Token token, std::string error) {
->>>>>>> origin/develop
   if (dry_run_)
     return nullptr;
 
@@ -941,11 +819,7 @@ Item *Lexer::StartOfA(Token token, std::string error) {
   return parent_item_;
 }
 
-<<<<<<< HEAD
-inline Item *Lexer::EndOfA(Token token, std::string /*error*/) {
-=======
 Item *Lexer::EndOfA(Token token, std::string /*error*/) {
->>>>>>> origin/develop
   if (dry_run_)
     return nullptr;
 
@@ -966,11 +840,7 @@ Item *Lexer::EndOfA(Token token, std::string /*error*/) {
   return nullptr;
 }
 
-<<<<<<< HEAD
-inline Item *Lexer::MaybeEndOfA(Token token, std::string error) {
-=======
 Item *Lexer::MaybeEndOfA(Token token, std::string error) {
->>>>>>> origin/develop
   if (parent_item_->token.name == token.name) {
     return EndOfA(token, error);
   }
@@ -980,11 +850,7 @@ Item *Lexer::MaybeEndOfA(Token token, std::string error) {
   }
 }
 
-<<<<<<< HEAD
-inline bool Lexer::OneOf(std::string possibles) {
-=======
 bool Lexer::OneOf(std::string possibles) {
->>>>>>> origin/develop
   auto peek = Peek();
 
   size_t position = possibles.find(Peek());
@@ -997,11 +863,7 @@ bool Lexer::OneOf(std::string possibles) {
   return false;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::ManyOf(std::string possibles) {
-=======
 bool Lexer::ManyOf(std::string possibles) {
->>>>>>> origin/develop
   bool has = false;
 
   while (OneOf(possibles)) {
@@ -1011,11 +873,7 @@ bool Lexer::ManyOf(std::string possibles) {
   return has;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::Until(std::string match) {
-=======
 bool Lexer::Until(std::string match) {
->>>>>>> origin/develop
   while (!OneOf(match)) {
     if (Next() == "")
       return false;
@@ -1024,11 +882,7 @@ bool Lexer::Until(std::string match) {
   return true;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::MatchExactly(std::string match) {
-=======
 bool Lexer::MatchExactly(std::string match) {
->>>>>>> origin/develop
   auto start_position = position_;
 
   for (auto m : match) {
@@ -1041,21 +895,6 @@ bool Lexer::MatchExactly(std::string match) {
   return true;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::OneDigit() { return OneOf("0123456789"); }
-
-inline bool Lexer::ManyDigits() { return ManyOf("0123456789"); }
-
-inline bool Lexer::OneLetter() {
-  return OneOf("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-}
-
-inline bool Lexer::ManyLetters() {
-  return ManyOf("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-}
-
-inline bool Lexer::ManyCharacters() {
-=======
 bool Lexer::OneDigit() { return OneOf("0123456789"); }
 
 bool Lexer::ManyDigits() { return ManyOf("0123456789"); }
@@ -1069,17 +908,12 @@ bool Lexer::ManyLetters() {
 }
 
 bool Lexer::ManyCharacters() {
->>>>>>> origin/develop
   return ManyOf("!\"#$%&\\\'()*+,-./"
                 "0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[|]^_`"
                 "abcdefghijklmnopqrstuvwxyz{}~");
 }
 
-<<<<<<< HEAD
-inline bool Lexer::Integer() {
-=======
 bool Lexer::Integer() {
->>>>>>> origin/develop
   auto start_position = position_;
 
   OneOf("+-");
@@ -1092,11 +926,7 @@ bool Lexer::Integer() {
   return true;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::Float() {
-=======
 bool Lexer::Float() {
->>>>>>> origin/develop
   auto start_position = position_;
 
   OneOf("+-");
@@ -1118,11 +948,7 @@ bool Lexer::Float() {
   return true;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::Number() {
-=======
 bool Lexer::Number() {
->>>>>>> origin/develop
   if (!Float()) {
     if (!Integer()) {
       return false;
@@ -1142,11 +968,7 @@ bool Lexer::Number() {
   return true;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::SkipWhiteSpace() {
-=======
 bool Lexer::SkipWhiteSpace() {
->>>>>>> origin/develop
   if (!ManyOf(" \t\r")) {
     Skip();
     return false;
@@ -1156,11 +978,7 @@ bool Lexer::SkipWhiteSpace() {
   return true;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::SkipLineBreak() {
-=======
 bool Lexer::SkipLineBreak() {
->>>>>>> origin/develop
   if (!OneOf("\n")) {
     return false;
   }
@@ -1169,11 +987,7 @@ bool Lexer::SkipLineBreak() {
   return true;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::SkipLineBreaks() {
-=======
 bool Lexer::SkipLineBreaks() {
->>>>>>> origin/develop
   if (!ManyOf("\n")) {
     return false;
   }
@@ -1182,11 +996,7 @@ bool Lexer::SkipLineBreaks() {
   return true;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::SkipLine() {
-=======
 bool Lexer::SkipLine() {
->>>>>>> origin/develop
   if (!Until("\n")) {
     return false;
   }
@@ -1195,11 +1005,7 @@ bool Lexer::SkipLine() {
   return true;
 }
 
-<<<<<<< HEAD
-inline State *Lexer::Error(std::string message) {
-=======
 State *Lexer::Error(std::string message) {
->>>>>>> origin/develop
 
   std::stringstream error;
   error << "Error around line " << line_ << ": " << message << std::endl;
@@ -1218,11 +1024,7 @@ State *Lexer::Error(std::string message) {
   return nullptr;
 }
 
-<<<<<<< HEAD
-inline State *Lexer::LastError() {
-=======
 State *Lexer::LastError() {
->>>>>>> origin/develop
   if (last_error_ == "") {
     Exceptions::LexerError("Lexer", "Something went wrong.");
   }
@@ -1234,11 +1036,7 @@ State *Lexer::LastError() {
   return nullptr;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::TestState(State *state) {
-=======
 bool Lexer::TestState(State *state) {
->>>>>>> origin/develop
   if (dry_run_)
     return false;
 
@@ -1258,22 +1056,6 @@ bool Lexer::TestState(State *state) {
   return state_transition;
 }
 
-<<<<<<< HEAD
-inline bool Lexer::IsDryRun() { return dry_run_; }
-
-inline size_t Lexer::LineNumber() { return line_; }
-
-#ifdef CADMESH_LEXER_VERBOSE
-inline void Lexer::PrintMessage(std::string name, std::string message) {
-  std::cout << "Lexer::" << name << " : " << message << std::endl;
-}
-#else
-inline void Lexer::PrintMessage(std::string, std::string) {}
-#endif
-
-#ifdef CADMESH_LEXER_VERBOSE
-inline void Lexer::PrintItem(Item item) {
-=======
 bool Lexer::IsDryRun() { return dry_run_; }
 
 size_t Lexer::LineNumber() { return line_; }
@@ -1288,17 +1070,12 @@ void Lexer::PrintMessage(std::string, std::string) {}
 
 #ifdef CADMESH_LEXER_VERBOSE
 void Lexer::PrintItem(Item item) {
->>>>>>> origin/develop
   auto depth = std::max(0, depth_) * 2;
   std::cout << std::string(depth, ' ') << item.token.name << ": " << item.value
             << std::endl;
 }
 #else
-<<<<<<< HEAD
-inline void Lexer::PrintItem(Item) {}
-=======
 void Lexer::PrintItem(Item) {}
->>>>>>> origin/develop
 #endif
 }
 }
@@ -1441,44 +1218,27 @@ namespace CADMesh {
 
 namespace Exceptions {
 
-<<<<<<< HEAD
-inline void FileNotFound(G4String origin, G4String filepath) {
-=======
 void FileNotFound(G4String origin, G4String filepath) {
->>>>>>> origin/develop
   G4Exception(
       ("CADMesh in " + origin).c_str(), "FileNotFound", FatalException,
       ("\nThe file: \n\t" + filepath + "\ncould not be found.").c_str());
 }
 
-<<<<<<< HEAD
-inline void LexerError(G4String origin, G4String message) {
-=======
 void LexerError(G4String origin, G4String message) {
->>>>>>> origin/develop
   G4Exception(
       ("CADMesh in " + origin).c_str(), "LexerError", FatalException,
       ("\nThe CAD file appears to contain incorrect syntax:\n\t" + message)
           .c_str());
 }
 
-<<<<<<< HEAD
-inline void ParserError(G4String origin, G4String message) {
-=======
 void ParserError(G4String origin, G4String message) {
->>>>>>> origin/develop
   G4Exception(("CADMesh in " + origin).c_str(), "ParserError", FatalException,
               ("\nThe CAD file appears to contain invalid data:\n\t" + message)
                   .c_str());
 }
 
-<<<<<<< HEAD
-inline void ReaderCantReadError(G4String origin, File::Type file_type,
-                                G4String filepath) {
-=======
 void ReaderCantReadError(G4String origin, File::Type file_type,
                          G4String filepath) {
->>>>>>> origin/develop
   G4Exception(
       ("CADMesh in " + origin).c_str(), "ReaderCantReadError", FatalException,
       (G4String("\nThe the reader can't read files of type '") +
@@ -1487,11 +1247,7 @@ void ReaderCantReadError(G4String origin, File::Type file_type,
           .c_str());
 }
 
-<<<<<<< HEAD
-inline void MeshNotFound(G4String origin, size_t index) {
-=======
 void MeshNotFound(G4String origin, size_t index) {
->>>>>>> origin/develop
   std::stringstream message;
   message << "\nThe mesh with index '" << index << "' could not be found.";
 
@@ -1499,11 +1255,7 @@ void MeshNotFound(G4String origin, size_t index) {
               message.str().c_str());
 }
 
-<<<<<<< HEAD
-inline void MeshNotFound(G4String origin, G4String name) {
-=======
 void MeshNotFound(G4String origin, G4String name) {
->>>>>>> origin/develop
   G4Exception(
       ("CADMesh in " + origin).c_str(), "MeshNotFound", FatalException,
       ("\nThe mesh with name '" + name + "' could not be found.").c_str());
@@ -1515,21 +1267,6 @@ void MeshNotFound(G4String origin, G4String name) {
 
 namespace CADMesh {
 
-<<<<<<< HEAD
-inline G4VSolid *TessellatedMesh::GetSolid() {
-  return (G4VSolid *)GetTessellatedSolid();
-}
-
-inline G4VSolid *TessellatedMesh::GetSolid(G4int index) {
-  return (G4VSolid *)GetTessellatedSolid(index);
-}
-
-inline G4VSolid *TessellatedMesh::GetSolid(G4String name, G4bool exact) {
-  return (G4VSolid *)GetTessellatedSolid(name, exact);
-}
-
-inline std::vector<G4VSolid *> TessellatedMesh::GetSolids() {
-=======
 G4VSolid *TessellatedMesh::GetSolid() {
   return (G4VSolid *)GetTessellatedSolid();
 }
@@ -1543,7 +1280,6 @@ G4VSolid *TessellatedMesh::GetSolid(G4String name, G4bool exact) {
 }
 
 std::vector<G4VSolid *> TessellatedMesh::GetSolids() {
->>>>>>> origin/develop
   std::vector<G4VSolid *> solids;
 
   for (auto mesh : reader_->GetMeshes()) {
@@ -1553,11 +1289,7 @@ std::vector<G4VSolid *> TessellatedMesh::GetSolids() {
   return solids;
 }
 
-<<<<<<< HEAD
-inline G4AssemblyVolume *TessellatedMesh::GetAssembly() {
-=======
 G4AssemblyVolume *TessellatedMesh::GetAssembly() {
->>>>>>> origin/develop
   if (assembly_) {
     return assembly_;
   }
@@ -1579,22 +1311,6 @@ G4AssemblyVolume *TessellatedMesh::GetAssembly() {
   return assembly_;
 }
 
-<<<<<<< HEAD
-inline G4TessellatedSolid *TessellatedMesh::GetTessellatedSolid() {
-  return GetTessellatedSolid(0);
-}
-
-inline G4TessellatedSolid *TessellatedMesh::GetTessellatedSolid(G4int index) {
-  return GetTessellatedSolid(reader_->GetMesh(index));
-}
-
-inline G4TessellatedSolid *TessellatedMesh::GetTessellatedSolid(G4String name,
-                                                                G4bool exact) {
-  return GetTessellatedSolid(reader_->GetMesh(name, exact));
-}
-
-inline G4TessellatedSolid *
-=======
 G4TessellatedSolid *TessellatedMesh::GetTessellatedSolid() {
   return GetTessellatedSolid(0);
 }
@@ -1609,7 +1325,6 @@ G4TessellatedSolid *TessellatedMesh::GetTessellatedSolid(G4String name,
 }
 
 G4TessellatedSolid *
->>>>>>> origin/develop
 TessellatedMesh::GetTessellatedSolid(std::shared_ptr<Mesh> mesh) {
   auto volume_solid = new G4TessellatedSolid(mesh->GetName());
 
@@ -1644,18 +1359,6 @@ TessellatedMesh::GetTessellatedSolid(std::shared_ptr<Mesh> mesh) {
 
 namespace CADMesh {
 
-<<<<<<< HEAD
-inline TetrahedralMesh::TetrahedralMesh() {}
-
-inline TetrahedralMesh::~TetrahedralMesh() {}
-
-inline G4VSolid *TetrahedralMesh::GetSolid() { return GetSolid(0); }
-
-inline G4VSolid *TetrahedralMesh::GetSolid(G4int /*index*/) { return nullptr; }
-
-inline G4VSolid *TetrahedralMesh::GetSolid(G4String /*name*/,
-                                           G4bool /*exact*/) {
-=======
 TetrahedralMesh::TetrahedralMesh() {}
 
 TetrahedralMesh::~TetrahedralMesh() {}
@@ -1665,25 +1368,16 @@ G4VSolid *TetrahedralMesh::GetSolid() { return GetSolid(0); }
 G4VSolid *TetrahedralMesh::GetSolid(G4int /*index*/) { return nullptr; }
 
 G4VSolid *TetrahedralMesh::GetSolid(G4String /*name*/, G4bool /*exact*/) {
->>>>>>> origin/develop
 
   return nullptr;
 }
 
-<<<<<<< HEAD
-inline std::vector<G4VSolid *> TetrahedralMesh::GetSolids() {
-=======
 std::vector<G4VSolid *> TetrahedralMesh::GetSolids() {
->>>>>>> origin/develop
 
   return std::vector<G4VSolid *>();
 }
 
-<<<<<<< HEAD
-inline G4AssemblyVolume *TetrahedralMesh::GetAssembly() {
-=======
 G4AssemblyVolume *TetrahedralMesh::GetAssembly() {
->>>>>>> origin/develop
   if (assembly_) {
     return assembly_;
   }
@@ -1751,11 +1445,7 @@ G4AssemblyVolume *TetrahedralMesh::GetAssembly() {
   return assembly_;
 }
 
-<<<<<<< HEAD
-inline G4ThreeVector TetrahedralMesh::GetTetPoint(G4int index_offset) {
-=======
 G4ThreeVector TetrahedralMesh::GetTetPoint(G4int index_offset) {
->>>>>>> origin/develop
   return G4ThreeVector(
       out_->pointlist[out_->tetrahedronlist[index_offset] * 3] * scale_ -
           offset_.x(),
@@ -1966,16 +1656,6 @@ namespace CADMesh {
 
 namespace File {
 
-<<<<<<< HEAD
-inline State *STLReader::CADMeshLexerState(StartSolid) {
-  if (DoesNotMatchExactly("solid"))
-    Error("STL files start with 'solid'. Make sure you are using an ASCII STL "
-          "file.");
-
-  SkipWhiteSpace();
-
-  RestOfLine();
-=======
 State *STLReader::CADMeshLexerState(StartSolid) {
   if (DoesNotMatchExactly("solid"))
     Error("STL files start with 'solid'.");
@@ -1983,7 +1663,6 @@ State *STLReader::CADMeshLexerState(StartSolid) {
   SkipWhiteSpace();
 
   ManyLetters();
->>>>>>> origin/develop
 
   StartOfA(Solid);
 
@@ -1991,11 +1670,7 @@ State *STLReader::CADMeshLexerState(StartSolid) {
   NextState(StartFacet);
 }
 
-<<<<<<< HEAD
-inline State *STLReader::CADMeshLexerState(EndSolid) {
-=======
 State *STLReader::CADMeshLexerState(EndSolid) {
->>>>>>> origin/develop
   SkipWhiteSpace();
   SkipLineBreaks();
   SkipWhiteSpace();
@@ -2009,11 +1684,7 @@ State *STLReader::CADMeshLexerState(EndSolid) {
   FinalState();
 }
 
-<<<<<<< HEAD
-inline State *STLReader::CADMeshLexerState(StartFacet) {
-=======
 State *STLReader::CADMeshLexerState(StartFacet) {
->>>>>>> origin/develop
   SkipWhiteSpace();
   SkipLineBreaks();
   SkipWhiteSpace();
@@ -2030,11 +1701,7 @@ State *STLReader::CADMeshLexerState(StartFacet) {
   NextState(StartVertices);
 }
 
-<<<<<<< HEAD
-inline State *STLReader::CADMeshLexerState(EndFacet) {
-=======
 State *STLReader::CADMeshLexerState(EndFacet) {
->>>>>>> origin/develop
   SkipWhiteSpace();
   SkipLineBreaks();
   SkipWhiteSpace();
@@ -2052,11 +1719,7 @@ State *STLReader::CADMeshLexerState(EndFacet) {
   NextState(EndSolid);
 }
 
-<<<<<<< HEAD
-inline State *STLReader::CADMeshLexerState(StartVertices) {
-=======
 State *STLReader::CADMeshLexerState(StartVertices) {
->>>>>>> origin/develop
   SkipWhiteSpace();
   SkipLineBreaks();
   SkipWhiteSpace();
@@ -2072,11 +1735,7 @@ State *STLReader::CADMeshLexerState(StartVertices) {
   NextState(Vertex);
 }
 
-<<<<<<< HEAD
-inline State *STLReader::CADMeshLexerState(EndVertices) {
-=======
 State *STLReader::CADMeshLexerState(EndVertices) {
->>>>>>> origin/develop
   SkipWhiteSpace();
   SkipLineBreaks();
   SkipWhiteSpace();
@@ -2092,11 +1751,7 @@ State *STLReader::CADMeshLexerState(EndVertices) {
   NextState(EndFacet);
 }
 
-<<<<<<< HEAD
-inline State *STLReader::CADMeshLexerState(Vertex) {
-=======
 State *STLReader::CADMeshLexerState(Vertex) {
->>>>>>> origin/develop
   SkipWhiteSpace();
   SkipLineBreaks();
   SkipWhiteSpace();
@@ -2109,11 +1764,7 @@ State *STLReader::CADMeshLexerState(Vertex) {
   NextState(ThreeVector);
 }
 
-<<<<<<< HEAD
-inline State *STLReader::CADMeshLexerState(ThreeVector) {
-=======
 State *STLReader::CADMeshLexerState(ThreeVector) {
->>>>>>> origin/develop
   SkipWhiteSpace();
 
   StartOfA(ThreeVector);
@@ -2148,11 +1799,7 @@ State *STLReader::CADMeshLexerState(ThreeVector) {
   NextState(EndVertices);
 }
 
-<<<<<<< HEAD
-inline G4bool STLReader::Read(G4String filepath) {
-=======
 G4bool STLReader::Read(G4String filepath) {
->>>>>>> origin/develop
   auto items = RunLexer(filepath, StartSolid);
 
   if (items.size() == 0) {
@@ -2178,15 +1825,9 @@ G4bool STLReader::Read(G4String filepath) {
   return true;
 }
 
-<<<<<<< HEAD
-inline G4bool STLReader::CanRead(Type file_type) { return (file_type == STL); }
-
-inline std::shared_ptr<Mesh> STLReader::ParseMesh(Items items) {
-=======
 G4bool STLReader::CanRead(Type file_type) { return (file_type == STL); }
 
 std::shared_ptr<Mesh> STLReader::ParseMesh(Items items) {
->>>>>>> origin/develop
   Triangles triangles;
 
   for (auto item : items) {
@@ -2204,11 +1845,7 @@ std::shared_ptr<Mesh> STLReader::ParseMesh(Items items) {
   return Mesh::New(triangles);
 }
 
-<<<<<<< HEAD
-inline G4TriangularFacet *STLReader::ParseFacet(Items items) {
-=======
 G4TriangularFacet *STLReader::ParseFacet(Items items) {
->>>>>>> origin/develop
   Triangles triangles;
 
   for (auto item : items) {
@@ -2237,11 +1874,7 @@ G4TriangularFacet *STLReader::ParseFacet(Items items) {
   return triangles[0];
 }
 
-<<<<<<< HEAD
-inline G4TriangularFacet *STLReader::ParseVertices(Items items) {
-=======
 G4TriangularFacet *STLReader::ParseVertices(Items items) {
->>>>>>> origin/develop
   std::vector<G4ThreeVector> vertices;
 
   for (auto item : items) {
@@ -2270,11 +1903,7 @@ G4TriangularFacet *STLReader::ParseVertices(Items items) {
   return new G4TriangularFacet(vertices[0], vertices[1], vertices[2], ABSOLUTE);
 }
 
-<<<<<<< HEAD
-inline G4ThreeVector STLReader::ParseThreeVector(Items items) {
-=======
 G4ThreeVector STLReader::ParseThreeVector(Items items) {
->>>>>>> origin/develop
   std::vector<double> numbers;
 
   for (auto item : items) {
@@ -2301,11 +1930,7 @@ namespace CADMesh {
 
 namespace File {
 
-<<<<<<< HEAD
-inline State *OBJReader::CADMeshLexerState(StartSolid) {
-=======
 State *OBJReader::CADMeshLexerState(StartSolid) {
->>>>>>> origin/develop
   StartOfA(Solid);
 
   TryState(Object);
@@ -2315,11 +1940,7 @@ State *OBJReader::CADMeshLexerState(StartSolid) {
   Error("Invalid element tag.");
 }
 
-<<<<<<< HEAD
-inline State *OBJReader::CADMeshLexerState(EndSolid) {
-=======
 State *OBJReader::CADMeshLexerState(EndSolid) {
->>>>>>> origin/develop
   if (Next() != "")
     lexer->LastError();
 
@@ -2327,11 +1948,7 @@ State *OBJReader::CADMeshLexerState(EndSolid) {
   FinalState();
 }
 
-<<<<<<< HEAD
-inline State *OBJReader::CADMeshLexerState(Ignore) {
-=======
 State *OBJReader::CADMeshLexerState(Ignore) {
->>>>>>> origin/develop
   if (DidNotSkipLine())
     NextState(EndSolid);
 
@@ -2343,11 +1960,7 @@ State *OBJReader::CADMeshLexerState(Ignore) {
   NextState(EndSolid);
 }
 
-<<<<<<< HEAD
-inline State *OBJReader::CADMeshLexerState(Vertex) {
-=======
 State *OBJReader::CADMeshLexerState(Vertex) {
->>>>>>> origin/develop
   SkipLineBreaks();
 
   if (DoesNotMatchExactly("v "))
@@ -2385,11 +1998,7 @@ State *OBJReader::CADMeshLexerState(Vertex) {
   NextState(EndSolid);
 }
 
-<<<<<<< HEAD
-inline State *OBJReader::CADMeshLexerState(Facet) {
-=======
 State *OBJReader::CADMeshLexerState(Facet) {
->>>>>>> origin/develop
   SkipLineBreaks();
 
   if (DoesNotMatchExactly("f "))
@@ -2446,11 +2055,7 @@ State *OBJReader::CADMeshLexerState(Facet) {
   NextState(EndSolid);
 }
 
-<<<<<<< HEAD
-inline State *OBJReader::CADMeshLexerState(Object) {
-=======
 State *OBJReader::CADMeshLexerState(Object) {
->>>>>>> origin/develop
   SkipLineBreaks();
 
   if (DoesNotMatchExactly("o "))
@@ -2473,11 +2078,7 @@ State *OBJReader::CADMeshLexerState(Object) {
   NextState(EndSolid);
 }
 
-<<<<<<< HEAD
-inline G4bool OBJReader::Read(G4String filepath) {
-=======
 G4bool OBJReader::Read(G4String filepath) {
->>>>>>> origin/develop
   auto items = RunLexer(filepath, StartSolid);
 
   if (items.size() == 0) {
@@ -2508,15 +2109,9 @@ G4bool OBJReader::Read(G4String filepath) {
   return true;
 }
 
-<<<<<<< HEAD
-inline G4bool OBJReader::CanRead(Type file_type) { return (file_type == OBJ); }
-
-inline std::shared_ptr<Mesh> OBJReader::ParseMesh(Items items) {
-=======
 G4bool OBJReader::CanRead(Type file_type) { return (file_type == OBJ); }
 
 std::shared_ptr<Mesh> OBJReader::ParseMesh(Items items) {
->>>>>>> origin/develop
   Triangles facets;
 
   for (auto item : items) {
@@ -2558,11 +2153,7 @@ std::shared_ptr<Mesh> OBJReader::ParseMesh(Items items) {
   return Mesh::New(facets);
 }
 
-<<<<<<< HEAD
-inline G4ThreeVector OBJReader::ParseVertex(Items items) {
-=======
 G4ThreeVector OBJReader::ParseVertex(Items items) {
->>>>>>> origin/develop
   std::vector<double> numbers;
 
   for (auto item : items) {
@@ -2583,11 +2174,7 @@ G4ThreeVector OBJReader::ParseVertex(Items items) {
   return G4ThreeVector(numbers[0], numbers[1], numbers[2]);
 }
 
-<<<<<<< HEAD
-inline G4TriangularFacet *OBJReader::ParseFacet(Items items, G4bool quad) {
-=======
 G4TriangularFacet *OBJReader::ParseFacet(Items items, G4bool quad) {
->>>>>>> origin/develop
   std::vector<int> indices;
 
   for (auto item : items) {
@@ -2635,11 +2222,7 @@ namespace CADMesh {
 
 namespace File {
 
-<<<<<<< HEAD
-inline State *PLYReader::CADMeshLexerState(StartHeader) {
-=======
 State *PLYReader::CADMeshLexerState(StartHeader) {
->>>>>>> origin/develop
   if (DoesNotMatchExactly("ply"))
     Error("PLY files start with 'ply'.");
 
@@ -2653,11 +2236,7 @@ State *PLYReader::CADMeshLexerState(StartHeader) {
   Error("Invalid header tag.");
 }
 
-<<<<<<< HEAD
-inline State *PLYReader::CADMeshLexerState(EndHeader) {
-=======
 State *PLYReader::CADMeshLexerState(EndHeader) {
->>>>>>> origin/develop
   if (DoesNotMatchExactly("end_header"))
     Error("PLY file headers end with 'end_header'.");
 
@@ -2667,11 +2246,7 @@ State *PLYReader::CADMeshLexerState(EndHeader) {
   FinalState();
 }
 
-<<<<<<< HEAD
-inline State *PLYReader::CADMeshLexerState(Element) {
-=======
 State *PLYReader::CADMeshLexerState(Element) {
->>>>>>> origin/develop
   if (DoesNotMatchExactly("element "))
     Error("An element is indicated by the tag 'element'.");
 
@@ -2698,11 +2273,7 @@ State *PLYReader::CADMeshLexerState(Element) {
   NextState(EndHeader);
 }
 
-<<<<<<< HEAD
-inline State *PLYReader::CADMeshLexerState(Property) {
-=======
 State *PLYReader::CADMeshLexerState(Property) {
->>>>>>> origin/develop
   if (DoesNotMatchExactly("property "))
     Error("An property is indicated by the tag 'property'.");
 
@@ -2730,11 +2301,7 @@ State *PLYReader::CADMeshLexerState(Property) {
   NextState(EndHeader);
 }
 
-<<<<<<< HEAD
-inline State *PLYReader::CADMeshLexerState(Ignore) {
-=======
 State *PLYReader::CADMeshLexerState(Ignore) {
->>>>>>> origin/develop
   if (DidNotSkipLine())
     NextState(EndHeader);
 
@@ -2745,11 +2312,7 @@ State *PLYReader::CADMeshLexerState(Ignore) {
   NextState(Ignore);
 }
 
-<<<<<<< HEAD
-inline State *PLYReader::CADMeshLexerState(Vertex) {
-=======
 State *PLYReader::CADMeshLexerState(Vertex) {
->>>>>>> origin/develop
   SkipLineBreaks();
   SkipWhiteSpace();
   SkipLineBreaks();
@@ -2782,11 +2345,7 @@ State *PLYReader::CADMeshLexerState(Vertex) {
   FinalState();
 }
 
-<<<<<<< HEAD
-inline State *PLYReader::CADMeshLexerState(Facet) {
-=======
 State *PLYReader::CADMeshLexerState(Facet) {
->>>>>>> origin/develop
   SkipLineBreaks();
   SkipWhiteSpace();
   SkipLineBreaks();
@@ -2819,11 +2378,7 @@ State *PLYReader::CADMeshLexerState(Facet) {
   FinalState();
 }
 
-<<<<<<< HEAD
-inline G4bool PLYReader::Read(G4String filepath) {
-=======
 G4bool PLYReader::Read(G4String filepath) {
->>>>>>> origin/develop
   auto lexer = Lexer(filepath, new StartHeaderState);
   auto items = lexer.GetItems();
 
@@ -2868,15 +2423,9 @@ G4bool PLYReader::Read(G4String filepath) {
   return true;
 }
 
-<<<<<<< HEAD
-inline G4bool PLYReader::CanRead(Type file_type) { return (file_type == PLY); }
-
-inline void PLYReader::ParseHeader(Items items) {
-=======
 G4bool PLYReader::CanRead(Type file_type) { return (file_type == PLY); }
 
 void PLYReader::ParseHeader(Items items) {
->>>>>>> origin/develop
   if (items.size() != 1) {
     std::stringstream error;
     error << "The header appears to be invalid or missing."
@@ -2964,13 +2513,8 @@ void PLYReader::ParseHeader(Items items) {
   }
 }
 
-<<<<<<< HEAD
-inline std::shared_ptr<Mesh> PLYReader::ParseMesh(Items vertex_items,
-                                                  Items face_items) {
-=======
 std::shared_ptr<Mesh> PLYReader::ParseMesh(Items vertex_items,
                                            Items face_items) {
->>>>>>> origin/develop
   Points vertices;
   Triangles facets;
 
@@ -3005,11 +2549,7 @@ std::shared_ptr<Mesh> PLYReader::ParseMesh(Items vertex_items,
   return Mesh::New(facets);
 }
 
-<<<<<<< HEAD
-inline G4ThreeVector PLYReader::ParseVertex(Items items) {
-=======
 G4ThreeVector PLYReader::ParseVertex(Items items) {
->>>>>>> origin/develop
   std::vector<double> numbers;
 
   for (auto item : items) {
@@ -3030,11 +2570,7 @@ G4ThreeVector PLYReader::ParseVertex(Items items) {
   return G4ThreeVector(numbers[x_index_], numbers[y_index_], numbers[z_index_]);
 }
 
-<<<<<<< HEAD
-inline G4TriangularFacet *PLYReader::ParseFacet(Items items, Points vertices) {
-=======
 G4TriangularFacet *PLYReader::ParseFacet(Items items, Points vertices) {
->>>>>>> origin/develop
   std::vector<int> indices;
 
   for (auto item : items) {
@@ -3065,15 +2601,6 @@ namespace CADMesh {
 
 namespace File {
 
-<<<<<<< HEAD
-inline ASSIMPReader::ASSIMPReader() : Reader("ASSIMPReader") {
-  importer_ = new Assimp::Importer();
-}
-
-inline ASSIMPReader::~ASSIMPReader() { delete importer_; }
-
-inline G4bool ASSIMPReader::Read(G4String filepath) {
-=======
 ASSIMPReader::ASSIMPReader() : Reader("ASSIMPReader") {
   importer_ = new Assimp::Importer();
 }
@@ -3081,7 +2608,6 @@ ASSIMPReader::ASSIMPReader() : Reader("ASSIMPReader") {
 ASSIMPReader::~ASSIMPReader() { delete importer_; }
 
 G4bool ASSIMPReader::Read(G4String filepath) {
->>>>>>> origin/develop
   auto scene = importer_->ReadFile(filepath.c_str(),
                                    aiProcess_Triangulate |
                                        aiProcess_JoinIdenticalVertices |
@@ -3122,11 +2648,7 @@ G4bool ASSIMPReader::Read(G4String filepath) {
   return true;
 }
 
-<<<<<<< HEAD
-inline G4bool ASSIMPReader::CanRead(Type /*file_type*/) { return true; }
-=======
 G4bool ASSIMPReader::CanRead(Type /*file_type*/) { return true; }
->>>>>>> origin/develop
 
 std::shared_ptr<ASSIMPReader> ASSIMP() {
   return std::make_shared<ASSIMPReader>();
@@ -3139,11 +2661,7 @@ namespace CADMesh {
 
 namespace File {
 
-<<<<<<< HEAD
-inline G4bool BuiltInReader::Read(G4String filepath) {
-=======
 G4bool BuiltInReader::Read(G4String filepath) {
->>>>>>> origin/develop
   File::Reader *reader = nullptr;
 
   auto type = TypeFromName(filepath);
@@ -3172,17 +2690,6 @@ G4bool BuiltInReader::Read(G4String filepath) {
   return true;
 }
 
-<<<<<<< HEAD
-inline G4bool BuiltInReader::CanRead(Type type) {
-  return type == STL || type == OBJ || type == PLY;
-}
-
-inline std::shared_ptr<BuiltInReader> BuiltIn() {
-  return std::make_shared<BuiltInReader>();
-}
-}
-}
-=======
 G4bool BuiltInReader::CanRead(Type type) {
   return type == STL || type == OBJ || type == PLY;
 }
@@ -3192,4 +2699,3 @@ std::shared_ptr<BuiltInReader> BuiltIn() {
 }
 }
 }
->>>>>>> origin/develop

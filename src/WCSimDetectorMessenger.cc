@@ -319,6 +319,10 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   // include the top endcap support structure 
   BuildTopEndcapStruct = new G4UIcmdWithoutParameter("/WCSim/HyperKOD/BuildTopEndcapStruct", this);
   BuildTopEndcapStruct ->SetGuidance("Build the stainless steel support structure for the top endcap");      
+  
+  // where to find top support struct CAD file
+  SupportStructCADFile = new G4UIcmdWithAString("WCSim/HyperKOD/SupportStructCADFile", this);
+  SupportStructCADFile->SetGuidance("Set the location of the file containing the top endcap support structure");
 
   // if true, tyvec is placed 1m above the water (on the bottom surface of the top plate of the endcap structure)
   TyvecAboveAirGap = new G4UIcmdWithAString("/WCSim/HyperKOD/TyvecAboveAirGap", this);
@@ -886,47 +890,6 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   }
 
 
-	if (command == cylinderTank_Height) {
-		bool isCylinder = WCSimDetector->GetIsCylinder();
-		if (isCylinder) {
-			G4cout << "Set length of cylinder " << newValue << " " << G4endl;
-            WCSimDetector->SetCylinderHeight(cylinderTank_Height->GetNewDoubleValue(newValue));
-		} else {
-			G4cout << "Not Cylinder Geometry. Detector height unchanged." << G4endl;
-		}
-	}
-
-	if (command == cylinderTank_Diameter) {
-		bool isCylinder = WCSimDetector->GetIsCylinder();
-		if (isCylinder) {
-			G4cout << "Set diameter of cylinder " << newValue << " " << G4endl;
-			WCSimDetector->SetCylinderDiameter(cylinderTank_Diameter->GetNewDoubleValue(newValue));
-		} else {
-			G4cout << "Not Cylinder Geometry. Detector diameter unchanged." << G4endl;
-		}
-	}
-
-	if (command == cylinderTank_Coverage) {
-		bool isCylinder = WCSimDetector->GetIsCylinder();
-		if (isCylinder) {
-			G4cout << "Set coverage of cylinder " << newValue << "% " << G4endl;
-			WCSimDetector->SetCylinderCoverage(cylinderTank_Coverage->GetNewDoubleValue(newValue));
-		} else {
-			G4cout << "Not Cylinder Geometry. Detector coverage unchanged." << G4endl;
-		}
-	}
-
-	if (command == cylinderTank_PMTType) {
-		bool isCylinder = WCSimDetector->GetIsCylinder();
-		if (isCylinder) {
-			G4cout << "Set PMT type of cylinder " << newValue << " " << G4endl;
-			WCSimDetector->SetCylinderPMTType(newValue);
-		} else {
-			G4cout << "Not Cylinder Geometry. Detector coverage unchanged." << G4endl;
-		}
-	}
-
-
 	if(command == PMTSize) {
 		G4cout << "SET PMT SIZE" << G4endl;
 		if ( newValue == "20inch"){
@@ -1060,6 +1023,11 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
       WCSimDetector->SetTyvecAboveAirGap(newValue);
     }                            
 
+    if(command == SupportStructCADFile) {
+      WCSimDetector->SetODEdited(true);
+      G4cout << "Set top endcap support structure file to " << newValue;
+      WCSimDetector->SetSupportStructCADFile(newValue);
+    }
 
     /////////// END OD //////////////
     /////////////////////////////////

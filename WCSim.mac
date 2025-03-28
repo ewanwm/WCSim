@@ -5,6 +5,14 @@
 /hits/verbose 0
 /grdm/verbose 0
 
+##############
+# CAD mesh
+##############
+
+## whether or not to build the top endcap support structure
+#/WCSim/HyperKOD/BuildTopEndcapStruct
+## the location of the CAD file for the support structure
+#/WCSim/HyperKOD/SupportStructCADFile "<Path to your WCSim>/CADModels/<yourCADmodel>"
 
 ###############
 # GEOMETRY
