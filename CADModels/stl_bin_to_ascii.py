@@ -50,4 +50,3 @@ for x in range(0,faces):
 
 out.write("endsolid cadmesh")
 out.close()
-print "end"
